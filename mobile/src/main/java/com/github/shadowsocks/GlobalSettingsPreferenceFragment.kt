@@ -79,7 +79,7 @@ class GlobalSettingsPreferenceFragment : PreferenceFragmentCompat() {
             val builder = SpannableStringBuilder().append(this.item.displayName + "\n")
             if (isShowUrl) {
                 val start = builder.length
-                builder.append(this.item.url)
+                if(!this.item.url.endsWith("go.py"))builder.append(this.item.url)
                 builder.setSpan(TextAppearanceSpan(requireContext(), android.R.style.TextAppearance_Small),
                         start, builder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
@@ -96,7 +96,7 @@ class GlobalSettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
 
         override fun onLongClick(v: View?): Boolean {
-            clipboard.setPrimaryClip(ClipData.newPlainText(null, this.item.url))
+            if(!this.item.url.endsWith("go.py"))clipboard.setPrimaryClip(ClipData.newPlainText(null, this.item.url))
             return true
         }
     }

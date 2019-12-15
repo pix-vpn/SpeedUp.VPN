@@ -7,7 +7,7 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
-        applicationId "io.github.shadowsocksrb"
+        applicationId "free.ssr.proxy.SpeedUp.VPN"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.sdkVersion
         versionCode rootProject.versionCode
@@ -27,6 +27,7 @@ android {
         debug {
             applicationIdSuffix = '.debug'
             versionNameSuffix = '-debug'
+            resValue 'string', 'applicationId', defaultConfig.applicationId + applicationIdSuffix
         }
     }
     compileOptions {
@@ -52,10 +53,11 @@ repositories {
 }
 dependencies {
     implementation project(':core')
-    implementation 'androidx.browser:browser:1.2.0-beta01'
+    implementation 'androidx.browser:browser:1.2.0-rc01'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta3'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc02'
-    implementation 'com.takisoft.preferencex:preferencex-simplemenu:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc03'
+    implementation 'com.takisoft.preferencex:preferencex-simplemenu:1.1.0'
     implementation 'com.twofortyfouram:android-plugin-api-for-locale:1.0.4'
     implementation 'com.github.kenglxn.QRGen:android:2.6.0'
+    implementation 'com.google.android.gms:play-services-ads:18.3.0'
 }

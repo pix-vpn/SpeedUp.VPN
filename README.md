@@ -14,8 +14,8 @@
   - Android SDK Tools
 
 ```bash
-git clone --recurse-submodules https://github.com/shadowsocksRb/shadowsocksRb-android.git
-cd shadowsocksRb-android
+git clone --recurse-submodules https://github.com/bannedbook/SpeedUp.VPN.git
+cd SpeedUp.VPN
 # 建议编辑 mobile/build.gradle ,修改 applicationId 以规避检测
 ./gradlew aR
 adb install mobile/build/outputs/apk/release/mobile-release.apk
@@ -38,7 +38,7 @@ GPLv3
     <li>tun2socks: <a href="https://github.com/shadowsocks/badvpn/blob/shadowsocks-android/COPYING">BSD</a></li>
     <li>pcre: <a href="https://android.googlesource.com/platform/external/pcre/+/master/dist2/LICENCE">BSD</a></li>
     <li>libancillary: <a href="https://github.com/shadowsocks/libancillary/blob/shadowsocks-android/COPYING">BSD</a></li>
-    <li>shadowsocksr-libev: <a href="https://github.com/shadowsocksRb/shadowsocksr-libev/blob/master/LICENSE">GPLv3</a></li>
+    <li>shadowsocksr-libev: <a href="https://github.com/bannedbook/shadowsocksr-libev/blob/master/LICENSE">GPLv3</a></li>
     <li>libsodium: <a href="https://github.com/jedisct1/libsodium/blob/master/LICENSE">ISC</a></li>
 </ul>
 

@@ -25,10 +25,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.admin.DevicePolicyManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageInfo
 import android.net.ConnectivityManager
 import android.os.Build
@@ -44,22 +42,23 @@ import com.github.shadowsocks.aidl.ShadowsocksConnection
 import com.github.shadowsocks.core.R
 import com.github.shadowsocks.database.Profile
 import com.github.shadowsocks.database.ProfileManager
+import com.github.shadowsocks.database.SSRSubManager
 import com.github.shadowsocks.net.TcpFastOpen
 import com.github.shadowsocks.preference.DataStore
 import com.github.shadowsocks.work.SSRSubSyncer
 import com.github.shadowsocks.utils.*
-import com.github.shadowsocks.work.UpdateCheck
+//import com.github.shadowsocks.work.UpdateCheck
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import SpeedUpVPN.VpnEncrypt
 import java.io.File
 import java.io.IOException
 import kotlin.reflect.KClass
 
 object Core {
     const val TAG = "Core"
-
     lateinit var app: Application
     lateinit var configureIntent: (Context) -> PendingIntent
     val connectivity by lazy { app.getSystemService<ConnectivityManager>()!! }
@@ -101,7 +100,11 @@ object Core {
             setExecutor { GlobalScope.launch { it.run() } }
             setTaskExecutor { GlobalScope.launch { it.run() } }
         }.build())
-        UpdateCheck.enqueue()
+        //UpdateCheck.enqueue() //google play 发布，禁止自主更新
+         //导入内置订阅
+        GlobalScope.launch {
+            SSRSubManager.create(VpnEncrypt.builtinSubUrl)
+        }
         if (DataStore.ssrSubAutoUpdate) SSRSubSyncer.enqueue()
 
         // handle data restored/crash
@@ -151,19 +154,4 @@ object Core {
     fun startService() = ContextCompat.startForegroundService(app, Intent(app, ShadowsocksConnection.serviceClass))
     fun reloadService() = app.sendBroadcast(Intent(Action.RELOAD).setPackage(app.packageName))
     fun stopService() = app.sendBroadcast(Intent(Action.CLOSE).setPackage(app.packageName))
-
-    fun listenForPackageChanges(onetime: Boolean = true, callback: () -> Unit) = object : BroadcastReceiver() {
-        init {
-            app.registerReceiver(this, IntentFilter().apply {
-                addAction(Intent.ACTION_PACKAGE_ADDED)
-                addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
-                addDataScheme("package")
-            })
-        }
-
-        override fun onReceive(context: Context, intent: Intent) {
-            callback()
-            if (onetime) app.unregisterReceiver(this)
-        }
-    }
 }

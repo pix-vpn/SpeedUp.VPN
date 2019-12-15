@@ -101,6 +101,11 @@ object ProfileManager {
         val lookup = LongSparseArray<Profile>(profiles.size).apply { profiles.forEach { put(it.id, it) } }
         return JSONArray(profiles.map { it.toJson(lookup) }.toTypedArray())
     }
+    fun serializeToJsonIgnoreVPN(profiles: List<Profile>? = getAllProfilesIgnoreGroup("SpeedUp.VPN")): JSONArray? {
+        if (profiles == null) return null
+        val lookup = LongSparseArray<Profile>(profiles.size).apply { profiles.forEach { put(it.id, it) } }
+        return JSONArray(profiles.map { it.toJson(lookup) }.toTypedArray())
+    }
 
     /**
      * Note: It's caller's responsibility to update DirectBoot profile if necessary.
@@ -151,6 +156,16 @@ object ProfileManager {
     @Throws(IOException::class)
     fun getAllProfiles(): List<Profile>? = try {
         PrivateDatabase.profileDao.list()
+    } catch (ex: SQLiteCantOpenDatabaseException) {
+        throw IOException(ex)
+    } catch (ex: SQLException) {
+        printLog(ex)
+        null
+    }
+
+    @Throws(IOException::class)
+    fun getAllProfilesIgnoreGroup(group: String): List<Profile>? = try {
+        PrivateDatabase.profileDao.listIgnoreGroup(group)
     } catch (ex: SQLiteCantOpenDatabaseException) {
         throw IOException(ex)
     } catch (ex: SQLException) {

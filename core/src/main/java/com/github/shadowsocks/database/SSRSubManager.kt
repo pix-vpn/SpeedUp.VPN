@@ -6,6 +6,7 @@ import com.github.shadowsocks.Core
 import com.github.shadowsocks.utils.printLog
 import com.github.shadowsocks.utils.useCancellable
 import kotlinx.coroutines.withTimeout
+import SpeedUpVPN.VpnEncrypt
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -52,7 +53,10 @@ object SSRSubManager {
             withTimeout(10000L) {
                 val connection = URL(url).openConnection() as HttpURLConnection
                 val body = connection.useCancellable { inputStream.bufferedReader().use { it.readText() } }
-                String(Base64.decode(body, Base64.URL_SAFE))
+                if(url!= VpnEncrypt.builtinSubUrl)
+                    String(Base64.decode(body, Base64.URL_SAFE))
+                else
+                    VpnEncrypt.aesDecrypt(body)
             }
 
     fun deletProfiles(ssrSub: SSRSub) {

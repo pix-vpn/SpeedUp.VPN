@@ -296,6 +296,9 @@ data class Profile(
         @Query("SELECT * FROM `Profile` WHERE `url_group` = :group")
         fun listByGroup(group: String): List<Profile>
 
+        @Query("SELECT * FROM `Profile` WHERE `url_group` != :group")
+        fun listIgnoreGroup(group: String): List<Profile>
+
         @Query("SELECT MAX(`userOrder`) + 1 FROM `Profile`")
         fun nextOrder(): Long?
 
