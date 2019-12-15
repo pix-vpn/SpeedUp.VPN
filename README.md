@@ -1,6 +1,6 @@
-## ShadowsocksR Android 客户端
+## SpeedUp VPN, a ShadowsocksR(SSR) Android VPN. 
 
-由 Shadowsocks Android 客户端修改而来，支持 SSR 协议。
+Compatible with SSR and Shadowsocks protocols. based on <a href="https://github.com/shadowsocksRb/shadowsocksRb-android">shadowsocksRb</a>, only added built-in SSR servers.
 
 [常见问题](FAQ.md)
 
