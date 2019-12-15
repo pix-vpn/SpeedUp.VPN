@@ -24,7 +24,7 @@ adb install mobile/build/outputs/apk/release/mobile-release.apk
 Welcome bug fixes, feature additions and translations. Bug fixes and feature additions should be prioritized for upstream contributions.
 
 ### License
-<p>Copyright (C) 2019 by <a href="https://github.com/bannedbook/SpeedUp.VPN/">SpeedUp VPN</a>.<br>
+<p>Copyright (C) 2019 by <a href="https://github.com/bannedbook/SpeedUp.VPN">SpeedUp VPN</a>.<br>
 Copyright (C) 2017 by Max Lv &lt;<a href="mailto:max.c.lv@gmail.com">max.c.lv@gmail.com</a>&gt;<br>
 Copyright (C) 2017 by Mygod Studio &lt;<a href="mailto:contact-shadowsocks-android@mygod.be">contact-shadowsocks-android@mygod.be</a>&gt;</p>
 <p>This program is free software: you can redistribute it and/or modify
