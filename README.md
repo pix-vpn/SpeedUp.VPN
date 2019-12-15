@@ -1,6 +1,6 @@
 ## SpeedUp VPN, a ShadowsocksR(SSR) Android VPN. 
 
-Compatible with SSR and Shadowsocks protocols. based on <a href="https://github.com/shadowsocksRb/shadowsocksRb-android">shadowsocksRb</a>, only added built-in SSR servers.
+Compatible with SSR and Shadowsocks protocols. based on <a href="https://github.com/shadowsocksRb/shadowsocksRb-android">shadowsocksRb</a>, only added built-in SSR servers. If you are not satisfied with our built-in vpn servers, you can add or import any SSR and Shadowsocks server to use.
 
 [常见问题](FAQ.md)
 
