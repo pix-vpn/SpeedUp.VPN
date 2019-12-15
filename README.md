@@ -24,30 +24,16 @@ adb install mobile/build/outputs/apk/release/mobile-release.apk
 Welcome bug fixes, feature additions and translations. Bug fixes and feature additions should be prioritized for upstream contributions.
 
 ### License
-
-GPLv3
-
-Dependent libraries
-
-<ul>
-    <li>redsocks: <a href="https://github.com/shadowsocks/redsocks/blob/shadowsocks-android/README">APL 2.0</a></li>
-    <li>mbed TLS: <a href="https://github.com/ARMmbed/mbedtls/blob/development/LICENSE">APL 2.0</a></li>
-    <li>libevent: <a href="https://github.com/shadowsocks/libevent/blob/master/LICENSE">BSD</a></li>
-    <li>tun2socks: <a href="https://github.com/shadowsocks/badvpn/blob/shadowsocks-android/COPYING">BSD</a></li>
-    <li>pcre: <a href="https://android.googlesource.com/platform/external/pcre/+/master/dist2/LICENCE">BSD</a></li>
-    <li>libancillary: <a href="https://github.com/shadowsocks/libancillary/blob/shadowsocks-android/COPYING">BSD</a></li>
-    <li>shadowsocksr-libev: <a href="https://github.com/bannedbook/shadowsocksr-libev/blob/master/LICENSE">GPLv3</a></li>
-    <li>libsodium: <a href="https://github.com/jedisct1/libsodium/blob/master/LICENSE">ISC</a></li>
-</ul>
-
-<ul>
-    <li>AndroidX: <a href="https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/LICENSE.txt">APL 2.0</a></li>
-    <li>kotlin: <a href="https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt">APL 2.0</a></li>
-    <li>material: <a href="https://github.com/material-components/material-components-android/blob/master/LICENSE">APL 2.0</a></li>
-    <li>gson: <a href="https://github.com/google/gson/blob/master/LICENSE">APL 2.0</a></li>
-    <li>dnsjava: <a href="https://github.com/dnsjava/dnsjava/blob/master/LICENSE">BSD</a></li>
-    <li>jsocks: <a href="https://android.googlesource.com/platform/external/pcre/+/master/dist2/LICENCE">LGPL 2.1</a></li>
-    <li>preferencex-simplemenu: <a href="https://github.com/takisoft/preferencex-android/blob/master/LICENSE">APL 2.0</a></li>
-    <li>android-plugin-api-for-locale: <a href="https://github.com/twofortyfouram/android-plugin-api-for-locale/blob/master/LICENSE.txt">APL 2.0</a></li>
-    <li>qrgen: <a href="https://github.com/kenglxn/QRGen">APL 2.0</a></li>
-</ul>
+<p>Copyright (C) 2019 by <a href="https://github.com/bannedbook/SpeedUp.VPN/">SpeedUp VPN</a>.<br>
+Copyright (C) 2017 by Max Lv &lt;<a href="mailto:max.c.lv@gmail.com">max.c.lv@gmail.com</a>&gt;<br>
+Copyright (C) 2017 by Mygod Studio &lt;<a href="mailto:contact-shadowsocks-android@mygod.be">contact-shadowsocks-android@mygod.be</a>&gt;</p>
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with this program. If not, see <a href="http://www.gnu.org/licenses/" rel="nofollow">http://www.gnu.org/licenses/</a>.</p>
