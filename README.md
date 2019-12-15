@@ -14,7 +14,7 @@ Compatible with SSR and Shadowsocks protocols. based on <a href="https://github.
 ```bash
 git clone --recurse-submodules https://github.com/bannedbook/SpeedUp.VPN.git
 cd SpeedUp.VPN
-# 建议编辑 mobile/build.gradle ,修改 applicationId 以规避检测
+# It is recommended to edit mobile/build.gradle to modify the applicationId to avoid detection.
 ./gradlew aR
 adb install mobile/build/outputs/apk/release/mobile-release.apk
 ```
