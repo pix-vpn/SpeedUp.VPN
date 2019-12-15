@@ -2,9 +2,7 @@
 
 Compatible with SSR and Shadowsocks protocols. based on <a href="https://github.com/shadowsocksRb/shadowsocksRb-android">shadowsocksRb</a>, only added built-in SSR servers. If you are not satisfied with our built-in vpn servers, you can add or import any SSR and Shadowsocks server to use.
 
-[常见问题](FAQ.md)
-
-### 编译
+### Compile
 
 * OpenJDK 1.8
 * Android SDK
@@ -21,15 +19,15 @@ cd SpeedUp.VPN
 adb install mobile/build/outputs/apk/release/mobile-release.apk
 ```
 
-### 贡献
+### Contribution
 
-欢迎问题修复，功能添加及翻译。其中问题修复和功能添加请优先考虑为上游贡献，翻译请以简体中文为底本。
+Welcome bug fixes, feature additions and translations. Bug fixes and feature additions should be prioritized for upstream contributions.
 
-### 许可
+### License
 
 GPLv3
 
-使用的库
+Dependent libraries
 
 <ul>
     <li>redsocks: <a href="https://github.com/shadowsocks/redsocks/blob/shadowsocks-android/README">APL 2.0</a></li>
