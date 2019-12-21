@@ -1,4 +1,4 @@
-<p>SpeedUp VPN for Android, based on ShadowsocksRb, compatible with SSR and Shadowsocks protocols. If you are not satisfied with our built-in vpn servers, you can add or import any SSR and Shadowsocks server to use.</p>
+<p>SpeedUp VPN for Android, based on ShadowsocksRb, compatible with ShadowsocksR(SSR) protocols. If you are not satisfied with our built-in vpn servers, you can add or import any ShadowsocksR(SSR) server to use.</p>
 <p>SpeedUp VPN – Free VPN proxy, speed up internet traffic, secure WiFi hotspot, hide ip address, protect privacy and unblock sites.</p>
 <p>100% free VPN! High speed VPN ! The best unlimited free VPN clients for android.</p>
 <p>Fastest - Connect successfully with high VPN speed.</p>
