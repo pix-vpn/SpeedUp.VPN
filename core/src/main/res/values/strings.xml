@@ -174,18 +174,7 @@
   <string name="ssrsub_remove_tip_direct">Delete the URL only</string>
   <string name="ssrsub_remove_tip_delete">Delete the nodes too</string>
 
-  <string name="recommended_site_1"><![CDATA[
-    <html>
-    <body style=\'margin:0;padding:0;font-size:14px;text-align:right\'>
-      <a href=\'https://www.theepochtimes.com/\' style=\'color:#e4f2fd\'>News</a>
-    </body>
-    </html>
-  ]]></string>
-  <string name="recommended_site_2"><![CDATA[
-    <html>
-    <body style=\'margin:0;padding:0;font-size:14px;text-align:right\'>
-      <a href=\'https://www.ntd.com/\' style=\'color:#e4f2fd\'>TV</a>
-    </body>
-    </html>
-  ]]></string>
+  <string name="recommended_site_1"></string>
+  <string name="recommended_site_2"></string>
+  <string name="builtinSubUrl">https://raw.githubusercontent.com/bannedbook/fanqiang/master/gae/go.py</string>
 </resources>

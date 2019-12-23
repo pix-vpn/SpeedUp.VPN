@@ -8,7 +8,6 @@ import javax.crypto.spec.SecretKeySpec
 
 
 object VpnEncrypt{
-    const val builtinSubUrl: String = "your builtinSubUrl"
     @JvmStatic private val theKey="your aes key"
     @JvmStatic fun aesEncrypt(v:String, secretKey:String=theKey) = AES256.encrypt(v, secretKey)
     @JvmStatic fun aesDecrypt(v:String, secretKey:String=theKey) = AES256.decrypt(v, secretKey)

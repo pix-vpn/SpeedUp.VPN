@@ -49,11 +49,11 @@ object SSRSubManager {
         emptyList()
     }
 
-    private suspend fun getResponse(url: String) =
+    private suspend fun getResponse(url: String, mode: String = "") =
             withTimeout(10000L) {
                 val connection = URL(url).openConnection() as HttpURLConnection
                 val body = connection.useCancellable { inputStream.bufferedReader().use { it.readText() } }
-                if(url!= VpnEncrypt.builtinSubUrl)
+                if(mode == "")
                     String(Base64.decode(body, Base64.URL_SAFE))
                 else
                     VpnEncrypt.aesDecrypt(body)
@@ -111,10 +111,10 @@ object SSRSubManager {
         }
     }
 
-    suspend fun create(url: String): SSRSub? {
+    suspend fun create(url: String, mode: String = ""): SSRSub? {
         if (url.isEmpty()) return null
         try {
-            val response = getResponse(url)
+            val response = getResponse(url,mode)
             val profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
             if (profiles.isNullOrEmpty() || profiles[0].url_group.isEmpty()) return null
             val new = SSRSub(url = url, url_group = profiles[0].url_group)

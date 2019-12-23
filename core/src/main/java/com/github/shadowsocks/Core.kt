@@ -103,7 +103,7 @@ object Core {
         //UpdateCheck.enqueue() //google play 发布，禁止自主更新
          //导入内置订阅
         GlobalScope.launch {
-            SSRSubManager.create(VpnEncrypt.builtinSubUrl)
+            SSRSubManager.create(app.getString(R.string.builtinSubUrl),"aes")
         }
         if (DataStore.ssrSubAutoUpdate) SSRSubSyncer.enqueue()
 
