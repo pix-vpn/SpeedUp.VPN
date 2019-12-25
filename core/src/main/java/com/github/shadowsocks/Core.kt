@@ -52,7 +52,6 @@ import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import SpeedUpVPN.VpnEncrypt
 import java.io.File
 import java.io.IOException
 import kotlin.reflect.KClass
@@ -103,7 +102,11 @@ object Core {
         //UpdateCheck.enqueue() //google play 发布，禁止自主更新
          //导入内置订阅
         GlobalScope.launch {
-            SSRSubManager.create(app.getString(R.string.builtinSubUrl),"aes")
+            var  builtinSubUrls  = app.resources.getStringArray(R.array.builtinSubUrls)
+            for (i in 0 until builtinSubUrls.size) {
+                var builtinSub=SSRSubManager.create(builtinSubUrls.get(i),"aes")
+                if (builtinSub != null) break
+            }
         }
         if (DataStore.ssrSubAutoUpdate) SSRSubSyncer.enqueue()
 
