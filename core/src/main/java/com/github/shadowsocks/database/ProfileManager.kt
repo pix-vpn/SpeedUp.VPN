@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks.database
 
+import SpeedUpVPN.VpnEncrypt
 import android.database.sqlite.SQLiteCantOpenDatabaseException
 import android.util.LongSparseArray
 import com.github.shadowsocks.Core
@@ -101,7 +102,7 @@ object ProfileManager {
         val lookup = LongSparseArray<Profile>(profiles.size).apply { profiles.forEach { put(it.id, it) } }
         return JSONArray(profiles.map { it.toJson(lookup) }.toTypedArray())
     }
-    fun serializeToJsonIgnoreVPN(profiles: List<Profile>? = getAllProfilesIgnoreGroup("SpeedUp.VPN")): JSONArray? {
+    fun serializeToJsonIgnoreVPN(profiles: List<Profile>? = getAllProfilesIgnoreGroup(VpnEncrypt.vpnGroupName)): JSONArray? {
         if (profiles == null) return null
         val lookup = LongSparseArray<Profile>(profiles.size).apply { profiles.forEach { put(it.id, it) } }
         return JSONArray(profiles.map { it.toJson(lookup) }.toTypedArray())

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        app:icon="@drawable/ic_social_emoji_symbols"
+        app:key="profileName"
+        app:title="@string/profile_name"
+        app:useSimpleSummaryProvider="true" />
+
+      <PreferenceCategory app:title="@string/feature_cat">
+
+        <com.takisoft.preferencex.SimpleMenuPreference
+            app:entries="@array/route_entry"
+            app:entryValues="@array/route_value"
+            app:icon="@drawable/ic_maps_directions"
+            app:key="route"
+            app:title="@string/route_list"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            app:icon="@drawable/ic_image_looks_6"
+            app:key="isIpv6"
+            app:summary="@string/ipv6_summary"
+            app:title="@string/ipv6" />
+        <SwitchPreference
+            app:icon="@drawable/ic_navigation_apps"
+            app:key="isProxyApps"
+            app:summary="@string/proxied_apps_summary"
+            app:title="@string/proxied_apps" />
+        <SwitchPreference
+            app:icon="@drawable/ic_device_data_usage"
+            app:key="metered"
+            app:summary="@string/metered_summary"
+            app:title="@string/metered" />
+        <EditTextPreference
+            app:icon="@drawable/ic_action_dns"
+            app:key="remoteDns"
+            app:title="@string/remote_dns"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            app:icon="@drawable/ic_action_dns"
+            app:key="isUdpDns"
+            app:summary="@string/udp_dns_summary"
+            app:title="@string/udp_dns" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/plugin">
+
+        <Preference
+            app:icon="@drawable/ic_maps_360"
+            app:key="udpFallback"
+            app:summary="@string/plugin_disabled"
+            app:title="@string/udp_fallback">
+            <intent
+                android:targetClass="com.github.shadowsocks.UdpFallbackProfileActivity"
+                android:targetPackage="@string/applicationId" />
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

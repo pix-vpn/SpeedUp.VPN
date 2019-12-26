@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks.database
 
+import SpeedUpVPN.VpnEncrypt
 import android.annotation.TargetApi
 import android.os.Parcelable
 import android.util.Base64
@@ -437,5 +438,8 @@ data class Profile(
         individual = DataStore.individual
         plugin = DataStore.plugin
         udpFallback = DataStore.udpFallback
+    }
+    fun isBuiltin(): Boolean {
+        return VpnEncrypt.vpnGroupName == url_group
     }
 }

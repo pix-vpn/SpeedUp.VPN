@@ -66,7 +66,7 @@ object SSRSubManager {
 
     suspend fun update(ssrSub: SSRSub, b: String = "") {
         var ssrSubMode=""
-        if("SpeedUp.VPN" == ssrSub.url_group)ssrSubMode="aes"
+        if(ssrSub.isBuiltin())ssrSubMode="aes"
         val response = if (b.isEmpty()) getResponse(ssrSub.url,ssrSubMode) else b
         var profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
         when {

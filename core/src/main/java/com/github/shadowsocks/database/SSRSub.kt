@@ -1,5 +1,6 @@
 package com.github.shadowsocks.database
 
+import SpeedUpVPN.VpnEncrypt
 import androidx.room.*
 
 @Entity
@@ -43,4 +44,7 @@ class SSRSub(
             NAME_CHANGED->"Name Changed(old name: $url_group) Stop Update"
             else -> throw IllegalArgumentException("status: $status")
         }
+    fun isBuiltin(): Boolean {
+        return VpnEncrypt.vpnGroupName == url_group
+    }
 }

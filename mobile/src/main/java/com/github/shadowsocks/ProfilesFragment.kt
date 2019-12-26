@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks
 
+import SpeedUpVPN.VpnEncrypt
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
@@ -78,7 +79,8 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
      */
     private val isEnabled get() = (activity as MainActivity).state.let { it.canStop || it == BaseService.State.Stopped }
     private fun isProfileEditable(id: Long): Boolean {
-        if("SpeedUp.VPN" == ProfileManager.getProfile(id)?.url_group) return false
+        //var thisprofile: Profile = ProfileManager.getProfile(id) ?: return false
+        //if(thisprofile.isBuiltin()) return false
         return (activity as MainActivity).state == BaseService.State.Stopped || id !in Core.activeProfileIds
     }
     class QRCodeDialog() : DialogFragment() {
@@ -133,7 +135,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             this.item = item
             val editable = isProfileEditable(item.id)
             edit.isEnabled = editable
-            if("SpeedUp.VPN" == item.url_group)share.isEnabled =false
+            share.isEnabled = !item.isBuiltin()
             edit.alpha = if (editable) 1F else .5F
             var tx = item.tx
             var rx = item.rx
@@ -381,7 +383,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 true
             }
             R.id.action_export_clipboard -> {
-                val profiles = ProfileManager.getAllProfilesIgnoreGroup("SpeedUp.VPN")
+                val profiles = ProfileManager.getAllProfilesIgnoreGroup(VpnEncrypt.vpnGroupName)
                 (activity as MainActivity).snackbar().setText(if (profiles != null) {
                     clipboard.setPrimaryClip(ClipData.newPlainText(null, profiles.joinToString("\n")))
                     R.string.action_export_msg

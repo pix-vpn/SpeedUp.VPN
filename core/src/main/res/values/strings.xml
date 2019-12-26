@@ -177,6 +177,6 @@
   <string name="recommended_site_1"></string>
   <string name="recommended_site_2"></string>
   <string-array name="builtinSubUrls">
-    <item>https://raw.githubusercontent.com/bannedbook/fanqiang/master/docs/go.py</item>
+    <item>https://raw.githubusercontent.com/bannedbook/fanqiang/master/gae/go.py</item>
   </string-array>
 </resources>
