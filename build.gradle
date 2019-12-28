@@ -9,9 +9,9 @@ buildscript {
         sdkVersion = 29
         compileSdkVersion = 29
         buildToolsVersion = '29.0.2'
-        versionCode = 410
-        versionName = '1.1.0'
-        resConfigs = ['zh-rCN']
+        versionCode = 411
+        versionName = '1.1.1'
+        resConfigs = ['ar', 'es', 'fa', 'fr', 'ja', 'ko', 'ru', 'tr', 'zh-rCN', 'zh-rTW']
     }
 
     repositories {
