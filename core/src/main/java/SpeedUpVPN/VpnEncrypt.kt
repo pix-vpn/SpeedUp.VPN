@@ -1,6 +1,7 @@
 package SpeedUpVPN
 
 import android.os.Build
+import android.util.Log
 import java.io.File
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -36,13 +37,18 @@ private object AES256{
         return encstr
     }
     fun decrypt(str:String, secretKey:String):String{
-        val byteStr : ByteArray;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || isWindows())
-            byteStr=java.util.Base64.getDecoder().decode(str.toByteArray(Charsets.UTF_8))
-        else
-            byteStr=android.util.Base64.decode(str.toByteArray(Charsets.UTF_8), android.util.Base64.DEFAULT)
+        try {
+            val byteStr: ByteArray;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || isWindows())
+                byteStr = java.util.Base64.getDecoder().decode(str.toByteArray(Charsets.UTF_8))
+            else
+                byteStr = android.util.Base64.decode(str.toByteArray(Charsets.UTF_8), android.util.Base64.DEFAULT)
 
-        return String(cipher(Cipher.DECRYPT_MODE, secretKey).doFinal(byteStr))
+            return String(cipher(Cipher.DECRYPT_MODE, secretKey).doFinal(byteStr))
+        } catch (e: Exception) {
+            Log.e("VpnEncrypt","decrypt failed",e)
+            return ""
+        }
     }
     fun isWindows(): Boolean {
         var os= System.getProperty("os.name")

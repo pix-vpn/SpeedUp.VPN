@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
-
+    archivesBaseName = "SpeedUp.VPN"
     defaultConfig {
         applicationId "free.ssr.proxy.SpeedUp.VPN"
         minSdkVersion rootProject.minSdkVersion

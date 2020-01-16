@@ -14,9 +14,7 @@
     <string name="port_transproxy">"透明代理端口"</string>
 
     <string name="remote_dns">"远程 DNS"</string>
-    <string name="traffic">%1$s↑\t%2$s↓</string>
     <string name="stat_summary">"上传: \t%3$s\t↑\t%1$s\n下载: \t%4$s\t↓\t%2$s"</string>
-    <string name="speed">%s/s</string>
     <string name="connection_test_pending">"检查连接"</string>
     <string name="connection_test_testing">"测试中…"</string>
     <string name="connection_test_available">"连接成功：HTTPS 握手延时 %d 毫秒"</string>
@@ -90,7 +88,7 @@
     <string name="connect">"连接"</string>
 
     <!-- menu category -->
-    <string name="profiles">"服务器配置文件"</string>
+    <string name="profiles">"服务器"</string>
     <string name="settings">"设置选项"</string>
     <string name="faq">"常见问题"</string>
     <string name="faq_url">https://github.com/bannedbook/SpeedUp.VPN/blob/master/FAQ.md</string>
@@ -141,6 +139,9 @@
     <string name="custom_rules">"自定义 ACL 文件"</string>
     <string name="acl_url_title">"自定义 ACL 文件地址"</string>
 
+    <string name="acl_rule_templates_generic">"子网路/主机名称 PCRE 模式"</string>
+    <string name="acl_rule_templates_domain">"网域及其所有子网域"</string>
+
     <!-- plugin -->
     <string name="plugin">"插件"</string>
     <string name="plugin_configure">"配置…"</string>
@@ -154,6 +155,7 @@
     <plurals name="ssrsub_manage_summary">
         <item quantity="other">添加了 %d 个订阅</item>
     </plurals>
+    <string name="update_servers">更新服务器</string>
     <string name="ssrsub_autoupdate">自动更新 SSR 订阅</string>
     <string name="ssrsub_autoupdate_summary">每天检查订阅</string>
     <string name="ssrsub_add">添加订阅地址</string>

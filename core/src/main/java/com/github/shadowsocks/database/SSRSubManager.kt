@@ -7,6 +7,8 @@ import com.github.shadowsocks.utils.printLog
 import com.github.shadowsocks.utils.useCancellable
 import kotlinx.coroutines.withTimeout
 import SpeedUpVPN.VpnEncrypt
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -127,6 +129,28 @@ object SSRSubManager {
             update(new, response)
             return new
         } catch (e: Exception) {
+            printLog(e)
+            return null
+        }
+    }
+
+    suspend fun createBuiltinSub(url: String, mode: String = ""): SSRSub? {
+        if (url.isEmpty()) return null
+        try {
+            val response = getResponse(url,mode)
+            val profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
+            if (profiles.isNullOrEmpty() || profiles[0].url_group.isEmpty()) return null
+            val new = SSRSub(url = url, url_group = profiles[0].url_group)
+            getAllSSRSub().forEach {
+                if (it.url_group == new.url_group) {
+                    update(it, response)
+                    return it
+                }
+            }
+            createSSRSub(new)
+            update(new, response)
+            return new
+         } catch (e: Exception) {
             printLog(e)
             return null
         }

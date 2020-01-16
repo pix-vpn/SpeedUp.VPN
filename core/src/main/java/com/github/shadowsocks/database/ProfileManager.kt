@@ -22,6 +22,7 @@ package com.github.shadowsocks.database
 
 import SpeedUpVPN.VpnEncrypt
 import android.database.sqlite.SQLiteCantOpenDatabaseException
+import android.util.Log
 import android.util.LongSparseArray
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.preference.DataStore
@@ -129,9 +130,14 @@ object ProfileManager {
 
     @Throws(SQLException::class)
     fun delProfile(id: Long) {
-        check(PrivateDatabase.profileDao.delete(id) == 1)
-        listener?.onRemove(id)
-        if (id in Core.activeProfileIds && DataStore.directBootAware) DirectBoot.clean()
+        try {
+            check(PrivateDatabase.profileDao.delete(id) == 1)
+            listener?.onRemove(id)
+            if (id in Core.activeProfileIds && DataStore.directBootAware) DirectBoot.clean()
+        } catch (e: Exception) {
+            Log.e("speedup.vpn","",e)
+        }
+
     }
 
     @Throws(SQLException::class)

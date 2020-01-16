@@ -84,7 +84,7 @@
     <string name="connect">"接続"</string>
 
     <!-- menu category -->
-    <string name="profiles">"プロファイル"</string>
+    <string name="profiles">"サーバー"</string>
     <string name="settings">"オプション設定"</string>
     <string name="faq">"よくある質問"</string>
     <string name="about">"本アプリについて"</string>

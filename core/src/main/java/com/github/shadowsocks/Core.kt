@@ -33,6 +33,7 @@ import android.os.Build
 import android.os.Build.VERSION_CODES.O
 import android.os.Build.VERSION_CODES.Q
 import android.os.UserManager
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -82,6 +83,17 @@ object Core {
         return result
     }
 
+    fun updateBuiltinServers(){
+        Log.e("updateBuiltinServers ","...")
+        GlobalScope.launch {
+            var  builtinSubUrls  = app.resources.getStringArray(com.github.shadowsocks.core.R.array.builtinSubUrls)
+            for (i in 0 until builtinSubUrls.size) {
+                var builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls.get(i),"aes")
+                if (builtinSub != null) break
+            }
+        }
+    }
+
     fun init(app: Application, configureClass: KClass<out Any>) {
         this.app = app
         this.configureIntent = {
@@ -100,14 +112,7 @@ object Core {
             setTaskExecutor { GlobalScope.launch { it.run() } }
         }.build())
         //UpdateCheck.enqueue() //google play 发布，禁止自主更新
-         //导入内置订阅
-        GlobalScope.launch {
-            var  builtinSubUrls  = app.resources.getStringArray(R.array.builtinSubUrls)
-            for (i in 0 until builtinSubUrls.size) {
-                var builtinSub=SSRSubManager.create(builtinSubUrls.get(i),"aes")
-                if (builtinSub != null) break
-            }
-        }
+
         if (DataStore.ssrSubAutoUpdate) SSRSubSyncer.enqueue()
 
         // handle data restored/crash
