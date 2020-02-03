@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <EditTextPreference
+        android:icon="@drawable/ic_baseline_group_work"
+        app:key="groupName"
+        app:title="@string/group_name"
+        app:useSimpleSummaryProvider="true" />
     <EditTextPreference
         app:icon="@drawable/ic_social_emoji_symbols"
         app:key="profileName"

@@ -44,8 +44,8 @@ object ProfileManager {
         fun onAdd(profile: Profile)
         fun onRemove(profileId: Long)
         fun onCleared()
+        fun reloadProfiles()
     }
-
     var listener: Listener? = null
 
     @Throws(SQLException::class)
@@ -57,11 +57,17 @@ object ProfileManager {
         return profile
     }
 
-    fun deletProfiles(profiles: List<Profile>) {
+    fun deletSSRSubProfiles(profiles: List<Profile>) {
+        if (profiles.isEmpty()) return
         val first: Long = Core.currentProfile?.first?.id ?: -1
         val second: Long = Core.currentProfile?.second?.id ?: -1
-        profiles.forEach {
+        profiles.plus(getObsoleteProfiles()).forEach {
             if (it.id != first && it.id != second) delProfile(it.id)
+            else {
+                it.subscription = Profile.SubscriptionStatus.Obsolete
+                it.url_group = ""
+                updateProfile(it)
+            }
         }
     }
 
@@ -73,8 +79,11 @@ object ProfileManager {
                 return@filter false
             }
             return@filter true
-        }.forEach { createProfile(it) }
-        deletProfiles(old)
+        }.forEach {
+            it.subscription = Profile.SubscriptionStatus.Active
+            createProfile(it)
+        }
+        deletSSRSubProfiles(old)
     }
 
     fun createProfilesFromJson(jsons: Sequence<InputStream>, replace: Boolean = false) {
@@ -98,7 +107,7 @@ object ProfileManager {
         }
     }
 
-    fun serializeToJson(profiles: List<Profile>? = getAllProfiles()): JSONArray? {
+    fun serializeToJson(profiles: List<Profile>? = getActiveProfiles()): JSONArray? {
         if (profiles == null) return null
         val lookup = LongSparseArray<Profile>(profiles.size).apply { profiles.forEach { put(it.id, it) } }
         return JSONArray(profiles.map { it.toJson(lookup) }.toTypedArray())
@@ -161,8 +170,8 @@ object ProfileManager {
     }
 
     @Throws(IOException::class)
-    fun getAllProfiles(): List<Profile>? = try {
-        PrivateDatabase.profileDao.list()
+    fun getActiveProfiles(): List<Profile>? = try {
+        PrivateDatabase.profileDao.listActive()
     } catch (ex: SQLiteCantOpenDatabaseException) {
         throw IOException(ex)
     } catch (ex: SQLException) {
@@ -170,6 +179,25 @@ object ProfileManager {
         null
     }
 
+    @Throws(IOException::class)
+    fun getObsoleteProfiles(): List<Profile> = try {
+        PrivateDatabase.profileDao.listObsolete()
+    } catch (ex: SQLiteCantOpenDatabaseException) {
+        throw IOException(ex)
+    } catch (ex: SQLException) {
+        printLog(ex)
+        emptyList()
+    }
+
+    @Throws(IOException::class)
+    fun getAllProfiles(): List<Profile>? = try {
+        PrivateDatabase.profileDao.listAll()
+    } catch (ex: SQLiteCantOpenDatabaseException) {
+        throw IOException(ex)
+    } catch (ex: SQLException) {
+        printLog(ex)
+        null
+    }
     @Throws(IOException::class)
     fun getAllProfilesIgnoreGroup(group: String): List<Profile>? = try {
         PrivateDatabase.profileDao.listIgnoreGroup(group)

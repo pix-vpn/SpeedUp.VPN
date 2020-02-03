@@ -5,10 +5,7 @@ import android.util.Base64
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.utils.printLog
 import com.github.shadowsocks.utils.useCancellable
-import kotlinx.coroutines.withTimeout
 import SpeedUpVPN.VpnEncrypt
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -51,19 +48,18 @@ object SSRSubManager {
         emptyList()
     }
 
-    private suspend fun getResponse(url: String, mode: String = "") =
-            withTimeout(10000L) {
-                val connection = URL(url).openConnection() as HttpURLConnection
-                val body = connection.useCancellable { inputStream.bufferedReader().use { it.readText() } }
-                if(mode == "")
-                    String(Base64.decode(body, Base64.URL_SAFE))
-                else
-                    VpnEncrypt.aesDecrypt(body)
-            }
+    private suspend fun getResponse(url: String, mode: String = ""): String {
+        val connection = URL(url).openConnection() as HttpURLConnection
+        val body = connection.useCancellable { inputStream.bufferedReader().use { it.readText() } }
+        if(mode == "")
+            return String(Base64.decode(body, Base64.URL_SAFE))
+        else
+            return VpnEncrypt.aesDecrypt(body)
+    }
 
     fun deletProfiles(ssrSub: SSRSub) {
         val profiles = ProfileManager.getAllProfilesByGroup(ssrSub.url_group)
-        ProfileManager.deletProfiles(profiles)
+        ProfileManager.deletSSRSubProfiles(profiles)
     }
 
     suspend fun update(ssrSub: SSRSub, b: String = "") {
@@ -102,36 +98,15 @@ object SSRSubManager {
         ProfileManager.createProfilesFromSub(profiles, ssrSub.url_group)
     }
 
-    suspend fun updateAll() {
-        val ssrsubs = getAllSSRSub()
-        ssrsubs.forEach {
-            try {
-                update(it)
-            } catch (e: Exception) {
-                it.status = SSRSub.NETWORK_ERROR
-                updateSSRSub(it)
-                printLog(e)
-            }
-        }
-    }
-
-    suspend fun create(url: String, mode: String = ""): SSRSub? {
-        if (url.isEmpty()) return null
-        try {
-            val response = getResponse(url,mode)
-            val profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
-            if (profiles.isNullOrEmpty() || profiles[0].url_group.isEmpty()) return null
-            val new = SSRSub(url = url, url_group = profiles[0].url_group)
-            getAllSSRSub().forEach {
-                if (it.url_group == new.url_group) return null
-            }
-            createSSRSub(new)
-            update(new, response)
-            return new
-        } catch (e: Exception) {
-            printLog(e)
-            return null
-        }
+    suspend fun create(url: String): SSRSub {
+        val response = getResponse(url)
+        val profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
+        if (profiles.isNullOrEmpty() || profiles[0].url_group.isEmpty()) throw IOException("Invalid Link")
+        var new = SSRSub(url = url, url_group = profiles[0].url_group)
+        getAllSSRSub().forEach { if (it.url_group == new.url_group) throw IOException("Group already exists") }
+        new = createSSRSub(new)
+        update(new, response)
+        return new
     }
 
     suspend fun createBuiltinSub(url: String, mode: String = ""): SSRSub? {

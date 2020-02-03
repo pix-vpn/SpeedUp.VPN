@@ -6,16 +6,6 @@ build/
 captures/
 release/
 
-app/.cxx/
-app/google-services.json
-app/lightningPlus/
-app/src/main/assets/config.conf
-app/src/main/cpp/org_bannedbook_app_service_NativeCall.h
-app/src/main/cpp/polipocall.cpp
-app/src/main/java/org/
-git.status
-
-
 .idea/
 *.iml
 

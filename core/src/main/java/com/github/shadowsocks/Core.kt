@@ -20,10 +20,7 @@
 
 package com.github.shadowsocks
 
-import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
@@ -35,10 +32,12 @@ import android.os.Build.VERSION_CODES.Q
 import android.os.UserManager
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import com.crashlytics.android.Crashlytics
 import com.github.shadowsocks.aidl.ShadowsocksConnection
 import com.github.shadowsocks.core.R
 import com.github.shadowsocks.database.Profile
@@ -46,9 +45,12 @@ import com.github.shadowsocks.database.ProfileManager
 import com.github.shadowsocks.database.SSRSubManager
 import com.github.shadowsocks.net.TcpFastOpen
 import com.github.shadowsocks.preference.DataStore
-import com.github.shadowsocks.work.SSRSubSyncer
+import com.github.shadowsocks.subscription.SubscriptionService
 import com.github.shadowsocks.utils.*
-//import com.github.shadowsocks.work.UpdateCheck
+import com.github.shadowsocks.work.UpdateCheck
+import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
+import io.fabric.sdk.android.Fabric
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import kotlinx.coroutines.GlobalScope
@@ -59,11 +61,16 @@ import kotlin.reflect.KClass
 
 object Core {
     const val TAG = "Core"
+
     lateinit var app: Application
+        @VisibleForTesting set
     lateinit var configureIntent: (Context) -> PendingIntent
+    val activity by lazy { app.getSystemService<ActivityManager>()!! }
     val connectivity by lazy { app.getSystemService<ConnectivityManager>()!! }
+    val notification by lazy { app.getSystemService<NotificationManager>()!! }
     val packageInfo: PackageInfo by lazy { getPackageInfo(app.packageName) }
     val deviceStorage by lazy { if (Build.VERSION.SDK_INT < 24) app else DeviceStorageApp(app) }
+    val analytics: FirebaseAnalytics by lazy { FirebaseAnalytics.getInstance(deviceStorage) }
     val directBootSupported by lazy {
         Build.VERSION.SDK_INT >= 24 && app.getSystemService<DevicePolicyManager>()?.storageEncryptionStatus ==
                 DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER
@@ -107,13 +114,13 @@ object Core {
 
         // overhead of debug mode is minimal: https://github.com/Kotlin/kotlinx.coroutines/blob/f528898/docs/debugging.md#debug-mode
         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
+        Fabric.with(deviceStorage, Crashlytics())   // multiple processes needs manual set-up
+        FirebaseApp.initializeApp(deviceStorage)
         WorkManager.initialize(deviceStorage, Configuration.Builder().apply {
             setExecutor { GlobalScope.launch { it.run() } }
             setTaskExecutor { GlobalScope.launch { it.run() } }
         }.build())
-        //UpdateCheck.enqueue() //google play 发布，禁止自主更新
-
-        if (DataStore.ssrSubAutoUpdate) SSRSubSyncer.enqueue()
+        UpdateCheck.enqueue() //google play 发布，禁止自主更新
 
         // handle data restored/crash
         if (Build.VERSION.SDK_INT >= 24 && DataStore.directBootAware &&
@@ -135,15 +142,15 @@ object Core {
 
     fun updateNotificationChannels() {
         if (Build.VERSION.SDK_INT >= O) @RequiresApi(O) {
-            val nm = app.getSystemService<NotificationManager>()!!
-            nm.createNotificationChannels(listOf(
+            notification.createNotificationChannels(listOf(
                     NotificationChannel("service-vpn", app.getText(R.string.service_vpn),
                             if (Build.VERSION.SDK_INT >= 28) NotificationManager.IMPORTANCE_MIN
                             else NotificationManager.IMPORTANCE_LOW),   // #1355
                     NotificationChannel("service-proxy", app.getText(R.string.service_proxy),
                             NotificationManager.IMPORTANCE_LOW),
                     NotificationChannel("service-transproxy", app.getText(R.string.service_transproxy),
-                            NotificationManager.IMPORTANCE_MIN),
+                            NotificationManager.IMPORTANCE_LOW),
+                    SubscriptionService.notificationChannel,
                     NotificationChannel("update", app.getText(R.string.update_channel),
                             NotificationManager.IMPORTANCE_DEFAULT)
             ).apply {

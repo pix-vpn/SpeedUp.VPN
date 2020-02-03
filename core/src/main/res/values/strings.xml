@@ -26,17 +26,17 @@
   <string name="connection_test_fail">Internet Unavailable</string>
   <string name="connection_test_error_status_code">Error code: #%d</string>
 
-    <!-- proxy category -->
-    <string name="group_name">Group Name</string>
-    <string name="profile_name">Profile Name</string>
-    <string name="proxy">Server</string>
-    <string name="remote_port">Remote Port</string>
-    <string name="sitekey">Password</string>
-    <string name="enc_method">Encrypt Method</string>
-    <string name="ssr_protocol">Protocol</string>
-    <string name="ssr_protocol_param">Protocol Param</string>
-    <string name="ssr_obfs">Obfs</string>
-    <string name="ssr_obfs_param">Obfs Param</string>
+  <!-- proxy category -->
+  <string name="group_name">Group Name</string>
+  <string name="profile_name">Profile Name</string>
+  <string name="proxy">Server</string>
+  <string name="remote_port">Remote Port</string>
+  <string name="sitekey">Password</string>
+  <string name="enc_method">Encrypt Method</string>
+  <string name="ssr_protocol">Protocol</string>
+  <string name="ssr_protocol_param">Protocol Param</string>
+  <string name="ssr_obfs">Obfs</string>
+  <string name="ssr_obfs_param">Obfs Param</string>
 
   <!-- feature category -->
   <string name="ipv6">IPv6 Route</string>
@@ -142,6 +142,18 @@
   <string name="vpn_connected">Connected, tap to check connection</string>
   <string name="not_connected">Not connected</string>
 
+  <!-- subscriptions -->
+  <string name="subscriptions">Subscriptions</string>
+  <string name="add_subscription">Add a subscription</string>
+  <string name="edit_subscription">Edit subscription</string>
+  <string name="update_subscription">Refresh servers from subscription</string>
+  <string name="service_subscription">Subscription Service</string>
+  <string name="service_subscription_working">Syncing subscriptions… (%1$d of %2$d)</string>
+  <string name="service_subscription_finishing">Finishing up…</string>
+  <string name="status_empty">Invalid link</string>
+  <string name="status_network_error">Update failed</string>
+  <string name="status_name_changed">Subscription expires, add again</string>
+
   <!-- acl -->
   <string name="custom_rules">Custom rules</string>
   <string name="acl_url_title">Custom ACL file url</string>
@@ -165,7 +177,6 @@
   <plurals name="ssrsub_manage_summary">
     <item quantity="other">Number of subscriptions: %d</item>
   </plurals>
-  <string name="update_servers">Update Servers</string>
   <string name="ssrsub_autoupdate">Auto update SSR subscriptions</string>
   <string name="ssrsub_autoupdate_summary">Auto update daily</string>
   <string name="ssrsub_add">Add URL</string>
@@ -174,7 +185,7 @@
   <string name="ssrsub_remove_tip">Delete this subscription without removing its nodes (nodes that bear its group name)?</string>
   <string name="ssrsub_remove_tip_direct">Delete the URL only</string>
   <string name="ssrsub_remove_tip_delete">Delete the nodes too</string>
-
+  <string name="update_servers">Update Servers</string>
   <string name="recommended_site_1"></string>
   <string name="recommended_site_2"></string>
   <string-array name="builtinSubUrls">

@@ -76,9 +76,11 @@ class ProfileConfigFragment : PreferenceFragmentCompat(), OnPreferenceDataStoreC
             activity.finish()
             return
         }
-        var thisprofile: Profile = ProfileManager.getProfile(profileId) ?: return
-        if(thisprofile.isBuiltin())
+        val profile = ProfileManager.getProfile(profileId) ?: Profile()
+        if(profile.isBuiltin()) {
             addPreferencesFromResource(R.xml.pref_profile_vpn)
+            findPreference<Preference>(Key.name)!!.isEnabled = false
+        }
         else {
             addPreferencesFromResource(R.xml.pref_profile)
             findPreference<EditTextPreference>(Key.remotePort)!!.setOnBindEditTextListener(EditTextPreferenceModifiers.Port)
@@ -101,6 +103,19 @@ class ProfileConfigFragment : PreferenceFragmentCompat(), OnPreferenceDataStoreC
         findPreference<Preference>(Key.udpdns)!!.isEnabled = serviceMode != Key.modeProxy
         udpFallback = findPreference(Key.udpFallback)!!
         DataStore.privateStore.registerChangeListener(this)
+
+        if (!profile.isBuiltin() && profile.subscription == Profile.SubscriptionStatus.Active) {
+            findPreference<Preference>(Key.group)!!.isEnabled = false
+            findPreference<Preference>(Key.name)!!.isEnabled = false
+            findPreference<Preference>(Key.host)!!.isEnabled = false
+            findPreference<Preference>(Key.password)!!.isEnabled = false
+            findPreference<Preference>(Key.method)!!.isEnabled = false
+            findPreference<Preference>(Key.remotePort)!!.isEnabled = false
+            findPreference<Preference>(Key.protocol)!!.isEnabled = false
+            findPreference<Preference>(Key.protocol_param)!!.isEnabled = false
+            findPreference<Preference>(Key.obfs)!!.isEnabled = false
+            findPreference<Preference>(Key.obfs_param)!!.isEnabled = false
+        } else findPreference<Preference>(Key.group)!!.isEnabled = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -41,14 +41,15 @@ class ActionEditTextPreferenceDialogFragment : EditTextPreferenceDialogFragmentC
                     try {
                         withTimeout(10000L) {
                             val connection = URL(mEditText.text.toString()).openConnection() as HttpURLConnection
-                            val acl = connection.useCancellable { inputStream.bufferedReader().use { it.readText() } }
-                            Acl.getFile(Acl.CUSTOM_RULES).printWriter().use { it.write(acl) }
+                            connection.useCancellable {
+                                inputStream.copyTo(Acl.getFile(Acl.CUSTOM_RULES).outputStream())
+                            }
                         }
                     } catch (e: Exception) {
                         printLog(e)
                         success = false
                     }
-                    withContext(Dispatchers.Main.immediate) {
+                    withContext(Dispatchers.Main) {
                         mButtonPositive.isEnabled = true
                         mButtonNegative.isEnabled = true
 

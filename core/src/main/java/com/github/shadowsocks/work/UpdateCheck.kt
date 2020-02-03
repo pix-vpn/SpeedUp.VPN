@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit
 
 class UpdateCheck(context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
     companion object {
-        const val url ="" //google play 发布，禁止自主更新
-        //const val url = "https://raw.githubusercontent.com/bannedbook/SpeedUp.VPN/master/update.json"
+
+        const val url = "https://raw.githubusercontent.com/bannedbook/SpeedUp.VPN/master/update.json"
 
         fun enqueue() = WorkManager.getInstance(Core.deviceStorage).enqueueUniquePeriodicWork(
                 "UpdateCheck", ExistingPeriodicWorkPolicy.KEEP,

@@ -80,10 +80,6 @@ object Key {
     const val controlImport = "control.import"
     const val controlExport = "control.export"
     const val about = "about"
-
-    const val ssrSub = "ssrSub"
-    const val ssrSubAutoUpdate = "ssrsub_autoupdate"
-
     const val aclUrl = "acl_url"
 }
 
@@ -91,6 +87,7 @@ object Action {
     val SERVICE = app.packageName + ".SERVICE"
     val CLOSE = app.packageName + ".CLOSE"
     val RELOAD = app.packageName + ".RELOAD"
+    val ABORT = app.packageName + ".ABORT"
 
     val EXTRA_PROFILE_ID = app.packageName + "EXTRA_PROFILE_ID"
 }
