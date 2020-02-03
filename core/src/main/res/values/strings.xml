@@ -103,7 +103,7 @@
   <string name="share">Share</string>
   <string name="add_profile">Add Profile</string>
   <string name="save_log">Save Log</string>
-  <string name="action_apply_all">Apply Settings to All profiles</string>
+  <string name="action_apply_all">Apply Settings to All Profiles</string>
   <string name="action_export_more">Export…</string>
   <string name="action_export_file">Export to file…</string>
   <string name="action_export">Export to Clipboard</string>
