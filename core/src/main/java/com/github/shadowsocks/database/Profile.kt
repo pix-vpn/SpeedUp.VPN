@@ -58,8 +58,8 @@ data class Profile(
         var obfs_param: String = "",
         var method: String = "aes-256-cfb",
 
-        var route: String = "all",
-        var remoteDns: String = "8.8.8.8:53",
+        var route: String = "bypass-lan-china",
+        var remoteDns: String = "1.1.1.1:53",
         var proxyApps: Boolean = false,
         var bypass: Boolean = false,
         var udpdns: Boolean = false,
