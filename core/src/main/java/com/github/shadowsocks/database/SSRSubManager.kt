@@ -95,7 +95,10 @@ object SSRSubManager {
             profiles = profiles.shuffled().take(limit)
         }
 
-        ProfileManager.createProfilesFromSub(profiles, ssrSub.url_group)
+        if(ssrSub.isBuiltin())
+            ProfileManager.createBuiltinProfilesFromSub(profiles)
+        else
+            ProfileManager.createProfilesFromSub(profiles, ssrSub.url_group)
     }
 
     suspend fun create(url: String): SSRSub {

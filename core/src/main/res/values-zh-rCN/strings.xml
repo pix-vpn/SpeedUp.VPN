@@ -83,7 +83,7 @@
     <string name="profile_invalid_input">"未找到有效的 SSR 配置信息。"</string>
 
     <!-- alert category -->
-    <string name="profile_empty">"请选择配置文件"</string>
+    <string name="profile_empty">"请选择服务器"</string>
     <string name="proxy_empty">"代理服务器地址及密码不能为空"</string>
     <string name="connect">"连接"</string>
 

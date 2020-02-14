@@ -31,6 +31,8 @@ import android.os.Build.VERSION_CODES.O
 import android.os.Build.VERSION_CODES.Q
 import android.os.UserManager
 import android.util.Log
+import android.view.Gravity
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
@@ -89,14 +91,23 @@ object Core {
         DataStore.profileId = result.id
         return result
     }
-
-    fun updateBuiltinServers(){
+    fun showMessage(msg: String) {
+        var toast = Toast.makeText(app, msg, Toast.LENGTH_SHORT)
+        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
+        toast.show()
+    }
+    fun updateBuiltinServers(activity:Activity? = null){
         Log.e("updateBuiltinServers ","...")
         GlobalScope.launch {
             var  builtinSubUrls  = app.resources.getStringArray(com.github.shadowsocks.core.R.array.builtinSubUrls)
             for (i in 0 until builtinSubUrls.size) {
                 var builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls.get(i),"aes")
                 if (builtinSub != null) break
+            }
+
+            if(activity != null) {//如果不是APP启动时更新，则停止服务，提醒重新连接
+                stopService()
+                activity.runOnUiThread(){showMessage("更新成功，如果必要请重新连接。")}
             }
         }
     }

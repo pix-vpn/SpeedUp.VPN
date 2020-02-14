@@ -405,7 +405,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.update_servers -> {
-                Core.updateBuiltinServers()
+                Core.updateBuiltinServers(activity)
                 true
             }
             R.id.action_scan_qr_code -> {

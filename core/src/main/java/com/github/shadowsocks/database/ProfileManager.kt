@@ -71,6 +71,13 @@ object ProfileManager {
         }
     }
 
+    fun deletBuiltinSSRSubProfiles(profiles: List<Profile>) {
+        if (profiles.isEmpty()) return
+        profiles.forEach {
+            delProfile(it.id)
+        }
+    }
+
     fun createProfilesFromSub(profiles: List<Profile>, group: String) {
         val old = getAllProfilesByGroup(group).toMutableList()
         profiles.filter {
@@ -84,6 +91,15 @@ object ProfileManager {
             createProfile(it)
         }
         deletSSRSubProfiles(old)
+    }
+
+    fun createBuiltinProfilesFromSub(profiles: List<Profile>) {
+        val old = getAllProfilesByGroup(VpnEncrypt.vpnGroupName).toMutableList()
+        deletBuiltinSSRSubProfiles(old)
+        profiles.forEach {
+            createProfile(it)
+        }
+
     }
 
     fun createProfilesFromJson(jsons: Sequence<InputStream>, replace: Boolean = false) {

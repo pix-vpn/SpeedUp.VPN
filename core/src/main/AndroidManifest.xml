@@ -28,6 +28,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false">
+        <!-- get aip_key from https://developer.android.com/google/backup/signup.html -->
         <meta-data android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIM5F-5ydWKC8n0V5PCzVXtGOerdXdgxzbf7k_5g" />
 
