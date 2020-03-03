@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         DataStore.publicStore.registerChangeListener(this)
         updateShortcuts()
         //导入内置订阅
-        Core.updateBuiltinServers()
+        if(DataStore.isAutoUpdateServers)Core.updateBuiltinServers()
     }
 
     override fun onPreferenceDataStoreChanged(store: PreferenceDataStore, key: String) {

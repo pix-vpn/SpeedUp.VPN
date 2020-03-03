@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks.bg
 
+import SpeedUpVPN.VpnEncrypt
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -36,6 +37,7 @@ import com.github.shadowsocks.aidl.IShadowsocksService
 import com.github.shadowsocks.aidl.IShadowsocksServiceCallback
 import com.github.shadowsocks.aidl.TrafficStats
 import com.github.shadowsocks.core.R
+import com.github.shadowsocks.database.ProfileManager
 import com.github.shadowsocks.net.HostsFile
 import com.github.shadowsocks.preference.DataStore
 import com.github.shadowsocks.utils.*

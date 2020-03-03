@@ -23,10 +23,9 @@ import java.util.concurrent.TimeUnit
 
 
 class UpdateCheck(context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
+    val url =context.getResources().getString(R.string.update_check_url)
+    //const val url = "https://raw.githubusercontent.com/bannedbook/SpeedUp.VPN/master/update.json"
     companion object {
-
-        const val url = "https://raw.githubusercontent.com/bannedbook/SpeedUp.VPN/master/update.json"
-
         fun enqueue() = WorkManager.getInstance(Core.deviceStorage).enqueueUniquePeriodicWork(
                 "UpdateCheck", ExistingPeriodicWorkPolicy.KEEP,
                 PeriodicWorkRequestBuilder<UpdateCheck>(1, TimeUnit.DAYS).run {

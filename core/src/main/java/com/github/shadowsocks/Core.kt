@@ -83,7 +83,7 @@ object Core {
     }
     val currentProfile: Pair<Profile, Profile?>? get() {
         if (DataStore.directBootAware) DirectBoot.getDeviceProfile()?.apply { return this }
-        return ProfileManager.expand(ProfileManager.getProfile(DataStore.profileId) ?: return null)
+        return ProfileManager.expand(ProfileManager.getProfile(DataStore.profileId) ?: ProfileManager.getFirstVPNServer())
     }
 
     fun switchProfile(id: Long): Profile {
@@ -102,7 +102,10 @@ object Core {
             var  builtinSubUrls  = app.resources.getStringArray(com.github.shadowsocks.core.R.array.builtinSubUrls)
             for (i in 0 until builtinSubUrls.size) {
                 var builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls.get(i),"aes")
-                if (builtinSub != null) break
+                if (builtinSub != null) {
+                    DataStore.profileId=ProfileManager.getFirstVPNServer().id
+                    break
+                }
             }
 
             if(activity != null) {//如果不是APP启动时更新，则停止服务，提醒重新连接

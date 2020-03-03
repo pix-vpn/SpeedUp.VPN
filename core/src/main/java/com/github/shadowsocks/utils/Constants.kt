@@ -46,6 +46,7 @@ object Key {
 
     const val route = "route"
 
+    const val isAutoUpdateServers = "isAutoUpdateServers"
     const val persistAcrossReboot = "isAutoConnect"
     const val directBootAware = "directBootAware"
 

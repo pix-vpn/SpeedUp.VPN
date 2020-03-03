@@ -74,9 +74,10 @@ class StatsBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         var recsite2= getResources().getString(R.string.recommended_site_2)
         txRateText.setBackgroundColor(Color.TRANSPARENT);
         rxRateText.setBackgroundColor(Color.TRANSPARENT);
-        txRateText.loadData(recsite1,"text/html; charset=utf-8",  "UTF-8")
-        rxRateText.loadData(recsite2,"text/html; charset=utf-8",  "UTF-8")
-
+        //txRateText.loadData(recsite1,"text/html; charset=utf-8",  "UTF-8")
+        //rxRateText.loadData(recsite2,"text/html; charset=utf-8",  "UTF-8")
+        txRateText.loadDataWithBaseURL(null,recsite1,"text/html; charset=utf-8",  "UTF-8",null)
+        rxRateText.loadDataWithBaseURL(null,recsite2,"text/html; charset=utf-8",  "UTF-8",null)
         super.setOnClickListener(l)
     }
 

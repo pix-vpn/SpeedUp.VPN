@@ -233,4 +233,11 @@ object ProfileManager {
         printLog(ex)
         emptyList()
     }
+
+    @Throws(IOException::class)
+    fun getFirstVPNServer(): Profile = try {
+        getAllProfilesByGroup(VpnEncrypt.vpnGroupName).first()
+    } catch (ex: SQLiteCantOpenDatabaseException) {
+        throw IOException(ex)
+    }
 }

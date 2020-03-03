@@ -179,6 +179,8 @@
     <string name="ssrsub_remove_tip_direct">僅删除訂閱</string>
     <string name="ssrsub_remove_tip_delete">與節點一起删除</string>
     <string name="update_servers">更新服務器</string>
+    <string name="auto_update_servers">"自動更新服務器"</string>
+    <string name="auto_update_servers_summary">"應用啟動後自動更新VPN服務器"</string>
     <string name="recommended_site_1"><![CDATA[
     <html>
     <body style=\'margin:0;padding:0;font-size:14px;text-align:right\'>
@@ -193,4 +195,5 @@
     </body>
     </html>
   ]]></string>
+    <string name="update_check_url">https://raw.githubusercontent.com/bannedbook/SpeedUp.VPN/master/update-zh.json</string>
 </resources>
