@@ -95,11 +95,17 @@ object ProfileManager {
 
     fun createBuiltinProfilesFromSub(profiles: List<Profile>) {
         val old = getAllProfilesByGroup(VpnEncrypt.vpnGroupName).toMutableList()
+        val activeProfile= getProfile(DataStore.profileId)
+        old.remove(activeProfile)
         deletBuiltinSSRSubProfiles(old)
         profiles.forEach {
-            createProfile(it)
+            if(activeProfile==null || !activeProfile.isSameHostAs(it))
+                createProfile(it)
+            else {
+                activeProfile.updateWith(it)
+                updateProfile(activeProfile)
+            }
         }
-
     }
 
     fun createProfilesFromJson(jsons: Sequence<InputStream>, replace: Boolean = false) {
@@ -234,10 +240,21 @@ object ProfileManager {
         emptyList()
     }
 
-    @Throws(IOException::class)
-    fun getFirstVPNServer(): Profile = try {
-        getAllProfilesByGroup(VpnEncrypt.vpnGroupName).first()
-    } catch (ex: SQLiteCantOpenDatabaseException) {
-        throw IOException(ex)
+    fun getFirstVPNServer(): Profile? {
+        try {
+            return getAllProfilesByGroup(VpnEncrypt.vpnGroupName)?.first()
+        } catch (ex: Exception) {
+            Log.e("speedup.vpn",this.javaClass.name+":"+ex.javaClass.name)
+            return null
+        }
+    }
+
+    fun getRandomVPNServer(): Profile? {
+        try {
+            return getAllProfilesByGroup(VpnEncrypt.vpnGroupName)?.random()
+        } catch (ex: Exception) {
+            Log.e("speedup.vpn",this.javaClass.name+":"+ex.javaClass.name)
+            return null
+        }
     }
 }

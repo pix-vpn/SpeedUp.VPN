@@ -44,6 +44,7 @@ import com.github.shadowsocks.aidl.ShadowsocksConnection
 import com.github.shadowsocks.core.R
 import com.github.shadowsocks.database.Profile
 import com.github.shadowsocks.database.ProfileManager
+import com.github.shadowsocks.database.SSRSub
 import com.github.shadowsocks.database.SSRSubManager
 import com.github.shadowsocks.net.TcpFastOpen
 import com.github.shadowsocks.preference.DataStore
@@ -83,7 +84,12 @@ object Core {
     }
     val currentProfile: Pair<Profile, Profile?>? get() {
         if (DataStore.directBootAware) DirectBoot.getDeviceProfile()?.apply { return this }
-        return ProfileManager.expand(ProfileManager.getProfile(DataStore.profileId) ?: ProfileManager.getFirstVPNServer())
+        var theOne=ProfileManager.getProfile(DataStore.profileId)
+        if (theOne==null){
+            theOne=ProfileManager.getRandomVPNServer()
+            if (theOne!=null)DataStore.profileId=theOne.id
+        }
+        return ProfileManager.expand(theOne ?: return null)
     }
 
     fun switchProfile(id: Long): Profile {
@@ -100,17 +106,21 @@ object Core {
         Log.e("updateBuiltinServers ","...")
         GlobalScope.launch {
             var  builtinSubUrls  = app.resources.getStringArray(com.github.shadowsocks.core.R.array.builtinSubUrls)
-            for (i in 0 until builtinSubUrls.size) {
-                var builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls.get(i),"aes")
+            var builtinSub:SSRSub?=null
+            for (i in builtinSubUrls.indices) {
+                builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls[i],"aes")
                 if (builtinSub != null) {
-                    DataStore.profileId=ProfileManager.getFirstVPNServer().id
+                    //val randomOne=ProfileManager.getRandomVPNServer()
+                    //if (randomOne!=null)DataStore.profileId=randomOne.id
                     break
                 }
             }
 
-            if(activity != null) {//如果不是APP启动时更新，则停止服务，提醒重新连接
-                stopService()
-                activity.runOnUiThread(){showMessage("更新成功，如果必要请重新连接。")}
+            if (builtinSub == null) {
+                activity?.runOnUiThread(){showMessage(app.getString(R.string.status_network_error))}
+            }else {//如果不是APP启动时更新，则停止服务，提醒重新连接
+                //stopService()
+                activity?.runOnUiThread(){showMessage(app.getString(R.string.update_servers_ok))}
             }
         }
     }

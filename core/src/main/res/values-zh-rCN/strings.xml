@@ -169,6 +169,7 @@
     <string name="ssrsub_manage">管理 SSR 订阅</string>
     <string name="ssrsub_remove_tip_delete">与节点一起删除</string>
     <string name="update_servers">更新服务器</string>
+    <string name="update_servers_ok">更新成功</string>
     <string name="auto_update_servers">"自动更新服务器"</string>
     <string name="auto_update_servers_summary">"应用启动后自动更新VPN服务器"</string>
     <string name="recommended_site_1">"<![CDATA[

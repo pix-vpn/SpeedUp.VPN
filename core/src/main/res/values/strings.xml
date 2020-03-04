@@ -177,6 +177,7 @@
   <string name="ssrsub_manage">SSR Subscription</string>
   <string name="ssrsub_remove_tip_delete">Delete the nodes too</string>
   <string name="update_servers">Update Servers</string>
+  <string name="update_servers_ok">Update completed</string>
   <string name = "auto_update_servers">Automatic Update Servers</string>
   <string name = "auto_update_servers_summary">Automatically update VPN servers when App launch</string>
   <string name="recommended_site_1">"<![CDATA[

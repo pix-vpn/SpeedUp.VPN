@@ -374,6 +374,21 @@ data class Profile(
         }
     }
 
+    fun isSameHostAs(other: Profile): Boolean = other.host == host
+    fun updateWith(other: Profile){
+        if (!isSameHostAs(other))return
+        host = other.host
+        remotePort = other.remotePort
+        password = other.password
+        method = other.method
+        protocol = other.protocol
+        protocol_param = other.protocol_param
+        obfs = other.obfs
+        obfs_param = other.obfs_param
+        name = other.name
+        url_group = other.url_group
+    }
+
     fun isSameAs(other: Profile): Boolean = other.host == host && other.remotePort == remotePort &&
             other.password == password && other.method == method &&
             other.protocol == protocol && other.protocol_param == protocol_param &&
