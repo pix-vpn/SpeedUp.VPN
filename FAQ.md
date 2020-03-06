@@ -32,7 +32,8 @@
 
 ## 各ROM兼容性问题
 
-转至[shadowsocks常见问题](https://github.com/shadowsocks/shadowsocks-android/blob/master/.github/faq.md#why-is-my-rom-not-supported)查看，包括部分应用无法联网，没有流量等问题。
+* 转至[shadowsocks常见问题](https://github.com/shadowsocks/shadowsocks-android/blob/master/.github/faq.md#why-is-my-rom-not-supported)查看，包括部分应用无法联网，没有流量等问题。
+* [谷歌Play商店和Youtube无法连接的问题](https://github.com/shadowsocks/luci-app-shadowsocks/issues/174)
 
 ## 国内应用网速缓慢
 
