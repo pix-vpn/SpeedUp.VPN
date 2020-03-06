@@ -5,6 +5,11 @@ Compatible with ShadowsocksR(SSR). based on shadowsocksRb-android, only added bu
 <p><a href="https://play.google.com/store/apps/details?id=free.ssr.proxy.SpeedUp.VPN"><img src="https://camo.githubusercontent.com/bdaf711a93d64d0bb5e5abfc346a8b84ea47f164/68747470733a2f2f706c61792e676f6f676c652e636f6d2f696e746c2f656e5f75732f6261646765732f696d616765732f67656e657269632f656e2d706c61792d62616467652e706e67" style="max-width:100%"></a>
 </p>
 
+### FAQ
+
+If you have any questions, please read the FAQ first:
+<a target="_blank" href="https://github.com/bannedbook/SpeedUp.VPN/blob/master/FAQ-en.md">FAQ</a>、<a target="_blank" href="https://github.com/bannedbook/SpeedUp.VPN/blob/master/FAQ.md">常见问题</a>
+
 ### Feedback
 <a target="_blank" href="https://github.com/bannedbook/SpeedUp.VPN/issues">Issues</a>、<a target="_blank" href="https://t.me/fqchat">Telegram Group</a>
 
