@@ -46,6 +46,7 @@ Scala on Android已经停止维护多年，本项目基于最新SS Android客户
 ## 与SS客户端相比，修改了什么
 
 删除ACL编辑功能，插件功能和TV版，核心替换为SSR。
+APP内置免费VPN服务器不可分享导出，如果您需要在其它平台翻墙，我们的[翻墙主页](https://github.com/bannedbook/fanqiang/wiki)上有其它平台的免费翻墙软件以及免费SS帐号，免费V2Ray帐号分享。
 
 ## 与原SSR客户端相比，有什么区别
 
