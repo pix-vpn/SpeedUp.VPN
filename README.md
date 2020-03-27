@@ -10,6 +10,8 @@ Compatible with ShadowsocksR(SSR). based on shadowsocksRb-android, only added bu
 If you have any questions, please read the FAQ first:
 <a target="_blank" href="https://github.com/bannedbook/SpeedUp.VPN/blob/master/FAQ-en.md">FAQ</a>、<a target="_blank" href="https://github.com/bannedbook/SpeedUp.VPN/blob/master/FAQ.md">常见问题</a>
 
+更多翻墙信息，请访问[bannedbook翻墙主页](https://github.com/bannedbook/fanqiang/wiki)。
+
 ### Feedback
 <a target="_blank" href="https://github.com/bannedbook/SpeedUp.VPN/issues">Issues</a>、<a target="_blank" href="https://t.me/fqchat">Telegram Group</a>
 
