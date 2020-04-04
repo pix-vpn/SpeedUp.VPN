@@ -7,6 +7,11 @@
         app:summary="@string/auto_update_servers_summary"
         app:title="@string/auto_update_servers"/>
     <SwitchPreference
+        app:key="is_get_free_servers"
+        app:icon="@drawable/ic_baseline_autorenew"
+        app:summary="@string/get_free_servers_summary"
+        app:title="@string/get_free_servers"/>
+    <SwitchPreference
         app:icon="@drawable/ic_communication_phonelink_ring"
         app:key="isAutoConnect"
         app:summary="@string/auto_connect_summary"
@@ -39,11 +44,19 @@
         app:key="serviceMode"
         app:title="@string/service_mode"
         app:useSimpleSummaryProvider="true" />
+    <SwitchPreference
+        app:icon="@drawable/ic_baseline_settings_remote_24"
+        app:key="shareOverLan"
+        app:title="@string/share_over_lan"/>
     <EditTextPreference
         app:icon="@drawable/ic_maps_directions_boat"
         app:key="portProxy"
         app:title="@string/port_proxy"
         app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        app:key="portHttpProxy"
+        app:title="@string/port_http"
+        app:useSimpleSummaryProvider="true"/>
     <EditTextPreference
         app:icon="@drawable/ic_action_dns"
         app:key="portLocalDns"

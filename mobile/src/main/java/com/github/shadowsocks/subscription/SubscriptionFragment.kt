@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks.subscription
 
+import SpeedUpVPN.VpnEncrypt
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
@@ -151,7 +152,7 @@ class SubscriptionFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener 
 
         override fun onClick(v: View?) {
             if (item.id == 0L) return
-            if (item.isBuiltin()) return
+            if (item.isBuiltin() || VpnEncrypt.freesubGroupName == item.url_group) return
             SubDialogFragment().withArg(SubItem(adapterPosition, item.url, item.url_group))
                     .show(this@SubscriptionFragment, REQUEST_CODE_EDIT)
         }

@@ -322,6 +322,9 @@ data class Profile(
         @Query("SELECT * FROM `Profile`")
         fun listAll(): List<Profile>
 
+        @Query("SELECT * FROM `Profile` ORDER BY `elapsed`,`url_group`")
+        fun listAllbySpeed(): List<Profile>
+
         @Query("SELECT * FROM `Profile` WHERE `url_group` = :group")
         fun listByGroup(group: String): List<Profile>
 

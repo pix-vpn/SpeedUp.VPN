@@ -202,6 +202,16 @@ object ProfileManager {
     }
 
     @Throws(IOException::class)
+    fun getProfilesOrderlySpeed(): List<Profile>? = try {
+        PrivateDatabase.profileDao.listAllbySpeed()
+    } catch (ex: SQLiteCantOpenDatabaseException) {
+        throw IOException(ex)
+    } catch (ex: SQLException) {
+        printLog(ex)
+        null
+    }
+
+    @Throws(IOException::class)
     fun getObsoleteProfiles(): List<Profile> = try {
         PrivateDatabase.profileDao.listObsolete()
     } catch (ex: SQLiteCantOpenDatabaseException) {

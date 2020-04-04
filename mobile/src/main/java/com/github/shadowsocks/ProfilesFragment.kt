@@ -27,10 +27,12 @@ import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
-import android.net.Uri
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.text.format.Formatter
 import android.util.Log
 import android.util.LongSparseArray
@@ -38,6 +40,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
@@ -46,7 +49,10 @@ import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.crashlytics.android.Crashlytics
 import com.github.shadowsocks.aidl.TrafficStats
 import com.github.shadowsocks.bg.BaseService
@@ -54,10 +60,7 @@ import com.github.shadowsocks.database.Profile
 import com.github.shadowsocks.database.ProfileManager
 import com.github.shadowsocks.plugin.showAllowingStateLoss
 import com.github.shadowsocks.preference.DataStore
-import com.github.shadowsocks.utils.Action
-import com.github.shadowsocks.utils.datas
-import com.github.shadowsocks.utils.printLog
-import com.github.shadowsocks.utils.readableMessage
+import com.github.shadowsocks.utils.*
 import com.github.shadowsocks.widget.ListHolderListener
 import com.github.shadowsocks.widget.MainListListener
 import com.github.shadowsocks.widget.RecyclerViewNoBugLinearLayoutManager
@@ -73,7 +76,11 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.*
 import java.nio.charset.StandardCharsets
 
 class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
@@ -314,7 +321,9 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             text2.text = item.url_group
             val context = requireContext()
             traffic.text =ArrayList<String>().apply {
-                if (item.elapsed > 0) this += String.format("%dms", item.elapsed)
+                if (item.elapsed > 0L ) this += String.format("%dms", item.elapsed)
+                if (item.elapsed == -1L ) this += "failed"
+                if (item.elapsed == -2L ) this += VpnEncrypt.testing
                 if (tx > 0 || rx > 0) this +=  getString(R.string.traffic,
                         Formatter.formatFileSize(context, tx), Formatter.formatFileSize(context, rx))
             }.joinToString(" \t")
@@ -361,7 +370,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
     }
 
     inner class ProfilesAdapter : RecyclerView.Adapter<ProfileViewHolder>(), ProfileManager.Listener {
-        internal val profiles = ProfileManager.getActiveProfiles()?.toMutableList() ?: mutableListOf()
+        internal val profiles = ProfileManager.getProfilesOrderlySpeed()?.toMutableList() ?: mutableListOf()
         private val updated = HashSet<Profile>()
 
         init {
@@ -501,6 +510,13 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         toolbar.inflateMenu(R.menu.profile_manager_menu)
         toolbar.setOnMenuItemClickListener(this)
         //ProfileManager.ensureNotEmpty() // don't create pending edit server
+
+        var recnews = getString(R.string.recommended_news)
+        var recommendedNewsView: WebView = view.findViewById(R.id.recommended_news2)
+        //recommendedNewsView.settings.javaScriptEnabled = true
+        recommendedNewsView.setBackgroundColor(Color.BLACK);
+        recommendedNewsView.loadDataWithBaseURL(null,recnews,"text/html; charset=utf-8",  "UTF-8",null)
+
         profilesList = view.findViewById(R.id.list)
         profilesList.setOnApplyWindowInsetsListener(MainListListener)
         profilesList.layoutManager = layoutManager
@@ -545,6 +561,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         return when (item.itemId) {
             R.id.update_servers -> {
                 Core.updateBuiltinServers(activity)
+                if(DataStore.is_get_free_servers)Core.importFreeSubs()
                 true
             }
             R.id.action_scan_qr_code -> {
@@ -610,10 +627,198 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 }, REQUEST_EXPORT_PROFILES)
                 true
             }
+
+            R.id.ping_all -> {
+                for (element in profilesAdapter.profiles) {
+                    element.elapsed = 0
+                }
+                profilesAdapter.notifyDataSetChanged()
+
+                for (k in 0 until profilesAdapter.profiles.size) {
+                    Log.e("tcping","$k")
+                    GlobalScope.launch {
+                        profilesAdapter.profiles[k].elapsed = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
+                        ProfileManager.updateProfile(profilesAdapter.profiles[k])
+                        Log.e("tcping","$k - "+profilesAdapter.profiles[k].elapsed)
+                        activity?.runOnUiThread() {
+                            Log.e("tcping","$k - update")
+                            profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
+                        }
+                    }
+
+                }
+                true
+            }
+
+            R.id.real_ping_all -> {
+                realTestProfiles(false)
+                true
+            }
+
+            R.id.retest_invalid_servers -> {
+                realTestProfiles(true)
+                true
+            }
+
+            R.id.remove_invalid_servers -> {
+                try {
+                    for (k in profilesAdapter.profiles.size-1 downTo  0 ) {
+                        if (profilesAdapter.profiles[k].elapsed == -1L){
+                            ProfileManager.delProfile(profilesAdapter.profiles[k].id)
+                            //profilesAdapter.remove(k)
+                        }
+                    }
+                    profilesAdapter.profiles.sortBy { it.elapsed}
+                    //configs.vmess.reverse()
+                    profilesAdapter.notifyDataSetChanged()
+                }
+                catch (e:Exception){
+                    e.printStackTrace()
+                }
+                true
+            }
             else -> false
         }
     }
 
+    private fun realTestProfiles(testInvalidOnly:Boolean) {
+        GlobalScope.launch {
+            val activity = activity as MainActivity
+            Core.stopService()
+            var isProxyStarted=false
+            for (k in 0 until profilesAdapter.profiles.size) {
+                if(testInvalidOnly && profilesAdapter.profiles[k].elapsed>0)continue
+                Log.e("real_ping_all",k.toString())
+                try {
+                    profilesAdapter.profiles[k].elapsed=-2
+                    val old = DataStore.profileId
+                    Core.switchProfile(profilesAdapter.profiles[k].id)
+                    activity?.runOnUiThread() {
+                        layoutManager.scrollToPositionWithOffset(k, 0)
+                        layoutManager.stackFromEnd = true
+                        profilesAdapter.refreshId(old)
+                        profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
+                    }
+
+                    var result = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
+                    if( result > 0) {
+                        if(!isProxyStarted)Core.startServiceForTest()
+                        else Core.reloadService()
+
+                        var ttt = 0
+                        while (tcping("127.0.0.1", DataStore.portProxy) < 0 || tcping("127.0.0.1", VpnEncrypt.HTTP_PROXY_PORT) < 0) {
+                            Log.e("starting", "$k try $ttt ...")
+                            if (ttt == 5) {
+                                Core.showMessage("Server: "+profilesAdapter.profiles[k].name+" caused the test to be interrupted.")
+                                Core.stopService()
+                                return@launch
+                            }
+                            Thread.sleep(500)
+                            ttt++
+                        }
+                        Thread.sleep(3_000) //必须等几秒，否则有问题...
+                        if(!isProxyStarted)isProxyStarted=true //第一次启动成功
+                        result = testConnection2()
+                        profilesAdapter.profiles[k].elapsed = result
+                    }
+                    else{
+                        profilesAdapter.profiles[k].elapsed = -1
+                    }
+
+                    Log.e("real_ping_all:", "$k,$result")
+                    ProfileManager.updateProfile(profilesAdapter.profiles[k])
+                    activity?.runOnUiThread() {
+                        profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
+                    }
+                }
+                catch (e:Exception){
+                    Log.e("real_ping_all",e.toString())
+                }
+            }
+            Core.stopService()
+            activity?.runOnUiThread() {
+                profilesAdapter.profiles.sortBy { it.elapsed}
+                profilesAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun testConnection2(timeout:Int = 10_000): Long {
+        var result: Long
+        var conn: HttpURLConnection? = null
+
+        try {
+            val url = URL("https",
+                    "raw.githubusercontent.com",
+                    "/")
+
+            //val conn = (if (DataStore.serviceMode != Key.modeVpn) { url.openConnection(Proxy(Proxy.Type.SOCKS, DataStore.proxyAddress))} else url.openConnection()) as HttpURLConnection
+            val conn = url.openConnection(Proxy(Proxy.Type.HTTP, InetSocketAddress("127.0.0.1", VpnEncrypt.HTTP_PROXY_PORT))) as HttpURLConnection
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36");
+            conn.connectTimeout = timeout
+            conn.readTimeout = timeout
+            conn.setRequestProperty("Connection", "close")
+            conn.instanceFollowRedirects = false
+            conn.useCaches = false
+
+            val start = SystemClock.elapsedRealtime()
+            val code = conn.responseCode
+            val elapsed = SystemClock.elapsedRealtime() - start
+
+            if (code == 301 && conn.responseLength == 0L) {
+                result = elapsed
+            } else {
+                throw IOException(code.toString())
+            }
+        } catch (e: IOException) {
+            // network exception
+            Log.d("testConnection2","IOException: "+Log.getStackTraceString(e))
+            result = -1
+        } catch (e: Exception) {
+            // library exception, eg sumsung
+            Log.d("testConnection2","Exception: "+Log.getStackTraceString(e))
+            result = -1
+        } finally {
+            conn?.disconnect()
+        }
+        return result
+    }
+
+    private val URLConnection.responseLength: Long
+        get() = if (Build.VERSION.SDK_INT >= 24) contentLengthLong else contentLength.toLong()
+
+    /**
+     * tcping
+     */
+    private fun tcping(url: String, port: Int): Long {
+        var time = -1L
+        for (k in 0 until 2) {
+            val one = socketConnectTime(url, port)
+            if (one != -1L  )
+                if(time == -1L || one < time) {
+                    time = one
+                }
+        }
+        return time
+    }
+    private fun socketConnectTime(url: String, port: Int): Long {
+        try {
+            val start = System.currentTimeMillis()
+            val socket = Socket()
+            var socketAddress = InetSocketAddress(url, port)
+            socket.connect(socketAddress,5000)
+            val time = System.currentTimeMillis() - start
+            socket.close()
+            return time
+        } catch (e: UnknownHostException) {
+            Log.e("testConnection2",e.toString())
+        } catch (e: IOException) {
+            Log.e("testConnection2",e.toString())
+        } catch (e: Exception) {
+            Log.e("testConnection2",e.toString())
+        }
+        return -1
+    }
     private fun startFilesForResult(intent: Intent, requestCode: Int) {
         try {
             startActivityForResult(intent.addCategory(Intent.CATEGORY_OPENABLE), requestCode)

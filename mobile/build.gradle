@@ -44,6 +44,11 @@ android {
         sourceCompatibility javaVersion
         targetCompatibility javaVersion
     }
+    externalNativeBuild {
+        ndkBuild {
+            path file('src/main/cpp/Android.mk')
+        }
+    }
     packagingOptions {
         exclude '/META-INF/*.version'
         exclude '**/*.kotlin_*'

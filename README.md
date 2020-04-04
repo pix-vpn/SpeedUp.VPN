@@ -12,9 +12,9 @@ Compatible with ShadowsocksR(SSR). based on shadowsocksRb-android, only added bu
 
 * OpenJDK 1.8
 * Android SDK
-  - Android SDK Build-Tools 29.0.2
+  - Android SDK Build-Tools 29.0.3
   - Android SDK Platform 29
-  - NDK (Side by side) 21.0.6011959-rc2
+  - NDK (Side by side) 21.1.6273396
   - Android SDK Tools
 
 ```bash

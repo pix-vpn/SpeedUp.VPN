@@ -217,6 +217,12 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         connection.connect(this, this)
         DataStore.publicStore.registerChangeListener(this)
         updateShortcuts()
+/*
+        var recnews= getString(R.string.recommended_news)
+        var recommendedNewsView : WebView= findViewById(R.id.recommended_news)
+        recommendedNewsView.setBackgroundColor(Color.TRANSPARENT);
+        recommendedNewsView.loadDataWithBaseURL(null,recnews,"text/html; charset=utf-8",  "UTF-8",null)
+*/
         //导入内置订阅
         if(DataStore.isAutoUpdateServers)Core.updateBuiltinServers()
     }

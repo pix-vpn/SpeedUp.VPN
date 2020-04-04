@@ -101,6 +101,23 @@ object SSRSubManager {
             ProfileManager.createProfilesFromSub(profiles, ssrSub.url_group)
     }
 
+    fun update(ssrSub: SSRSub, profiles : List<Profile>) {
+        when {
+            profiles.isEmpty() -> {
+                deletProfiles(ssrSub)
+                ssrSub.status = SSRSub.EMPTY
+                updateSSRSub(ssrSub)
+                return
+            }
+            else -> {
+                ssrSub.status = SSRSub.NORMAL
+                updateSSRSub(ssrSub)
+            }
+        }
+
+        ProfileManager.createProfilesFromSub(profiles, ssrSub.url_group)
+    }
+
     suspend fun create(url: String): SSRSub {
         val response = getResponse(url)
         val profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
@@ -117,16 +134,24 @@ object SSRSubManager {
         try {
             val response = getResponse(url,mode)
             val profiles = Profile.findAllSSRUrls(response, Core.currentProfile?.first).toList()
-            if (profiles.isNullOrEmpty() || profiles[0].url_group.isEmpty()) return null
-            val new = SSRSub(url = url, url_group = profiles[0].url_group)
+            if (profiles.isNullOrEmpty()) return null
+            var theGroupName = profiles[0].url_group
+            if (theGroupName.isNullOrEmpty() || theGroupName != VpnEncrypt.vpnGroupName){
+                theGroupName=VpnEncrypt.freesubGroupName
+                profiles.forEach { it.url_group = VpnEncrypt.freesubGroupName }
+            }
+            
+            val new = SSRSub(url = url, url_group = theGroupName)
             getAllSSRSub().forEach {
                 if (it.url_group == new.url_group) {
-                    update(it, response)
+                    if(theGroupName==VpnEncrypt.freesubGroupName)update(it, profiles)
+                    else update(it, response)
                     return it
                 }
             }
             createSSRSub(new)
-            update(new, response)
+            if(theGroupName==VpnEncrypt.freesubGroupName)update(new, profiles)
+            else update(new, response)
             return new
          } catch (e: Exception) {
             printLog(e)

@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks
 
+import SpeedUpVPN.VpnEncrypt
 import android.app.*
 import android.app.admin.DevicePolicyManager
 import android.content.Context
@@ -41,6 +42,7 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.crashlytics.android.Crashlytics
 import com.github.shadowsocks.aidl.ShadowsocksConnection
+import com.github.shadowsocks.bg.ProxyService
 import com.github.shadowsocks.core.R
 import com.github.shadowsocks.database.Profile
 import com.github.shadowsocks.database.ProfileManager
@@ -125,6 +127,21 @@ object Core {
         }
     }
 
+    /**
+     * import free sub
+     */
+    fun importFreeSubs(): Boolean {
+        try {
+            GlobalScope.launch {
+                SSRSubManager.createBuiltinSub(VpnEncrypt.freesuburl)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+        return true
+    }
+
     fun init(app: Application, configureClass: KClass<out Any>) {
         this.app = app
         this.configureIntent = {
@@ -193,4 +210,6 @@ object Core {
     fun startService() = ContextCompat.startForegroundService(app, Intent(app, ShadowsocksConnection.serviceClass))
     fun reloadService() = app.sendBroadcast(Intent(Action.RELOAD).setPackage(app.packageName))
     fun stopService() = app.sendBroadcast(Intent(Action.CLOSE).setPackage(app.packageName))
+
+    fun startServiceForTest() = app.startService(Intent(app, ProxyService::class.java).putExtra("test","go"))
 }
