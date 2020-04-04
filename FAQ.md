@@ -32,7 +32,8 @@
 
 ## 各ROM兼容性问题
 
-转至[shadowsocks常见问题](https://github.com/shadowsocks/shadowsocks-android/blob/master/.github/faq.md#why-is-my-rom-not-supported)查看，包括部分应用无法联网，没有流量等问题。
+* 转至[shadowsocks常见问题](https://github.com/shadowsocks/shadowsocks-android/blob/master/.github/faq.md#why-is-my-rom-not-supported)查看，包括部分应用无法联网，没有流量等问题。
+* [谷歌Play商店和Youtube无法连接的问题](https://github.com/shadowsocks/luci-app-shadowsocks/issues/174)
 
 ## 国内应用网速缓慢
 
@@ -44,7 +45,9 @@ Scala on Android已经停止维护多年，本项目基于最新SS Android客户
 
 ## 与SS客户端相比，修改了什么
 
-删除ACL编辑功能，插件功能和TV版，核心替换为SSR。
+* 删除ACL编辑功能，插件功能和TV版，核心替换为SSR。
+* 添加免费内置SSR服务器。
+* APP内置免费VPN服务器不可分享导出，如果您需要在其它平台翻墙，我们的[翻墙主页](https://github.com/bannedbook/fanqiang/wiki)上有其它平台的免费翻墙软件以及免费SS帐号，免费V2Ray帐号分享。
 
 ## 与原SSR客户端相比，有什么区别
 
