@@ -183,8 +183,11 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
     lateinit var mAdView : AdView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;//会导致statusbar有时不能自动缩回，改为在AndroidMainfest.xml设置
+        //如果rotation，会导致批量测试过程出错，view无法更新，最后报错
         SingleInstanceActivity.register(this) ?: return
         setContentView(R.layout.layout_main)
+
         MobileAds.initialize(this) {}
         mAdView = findViewById(R.id.adView)
         val adRequest = AdRequest.Builder().build()

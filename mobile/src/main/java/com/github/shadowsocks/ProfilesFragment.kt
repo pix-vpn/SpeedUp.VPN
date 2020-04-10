@@ -19,7 +19,6 @@
  *******************************************************************************/
 
 package com.github.shadowsocks
-
 import SpeedUpVPN.VpnEncrypt
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -29,7 +28,6 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -41,6 +39,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
@@ -60,7 +59,10 @@ import com.github.shadowsocks.database.Profile
 import com.github.shadowsocks.database.ProfileManager
 import com.github.shadowsocks.plugin.showAllowingStateLoss
 import com.github.shadowsocks.preference.DataStore
-import com.github.shadowsocks.utils.*
+import com.github.shadowsocks.utils.Action
+import com.github.shadowsocks.utils.datas
+import com.github.shadowsocks.utils.printLog
+import com.github.shadowsocks.utils.readableMessage
 import com.github.shadowsocks.widget.ListHolderListener
 import com.github.shadowsocks.widget.MainListListener
 import com.github.shadowsocks.widget.RecyclerViewNoBugLinearLayoutManager
@@ -90,11 +92,10 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
          */
         var instance: ProfilesFragment? = null
 
-        private const val KEY_URL = "QRCodeDialog.KEY_URL"
+        private const val KEY_URL = "com.github.shadowsocks.QRCodeDialog.KEY_URL"
         private const val REQUEST_IMPORT_PROFILES = 1
         private const val REQUEST_REPLACE_PROFILES = 3
         private const val REQUEST_EXPORT_PROFILES = 2
-        private const val REQUEST_SCAN_QRCODE = 4
 
         private val iso88591 = StandardCharsets.ISO_8859_1.newEncoder()
     }
@@ -126,7 +127,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             }.asSequence().toList().reversed()) {
                 try {
                     val viewHolder = profilesList.findViewHolderForAdapterPosition(i) as ProfileViewHolder
-                    if (viewHolder.item.isBuiltin()) {
+                    if (true /*viewHolder.item.isBuiltin()*/) {
                         viewHolder.populateUnifiedNativeAdView(nativeAd!!, nativeAdView!!)
                         // might be in the middle of a layout after scrolling, need to wait
                         withContext(Dispatchers.Main) { profilesAdapter.notifyItemChanged(i) }
@@ -270,7 +271,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         }
 
         fun attach() {
-            if (adHost != null || !item.isBuiltin()) return
+            if (adHost != null /*|| !item.isBuiltin()*/) return
             if (nativeAdView == null) {
                 nativeAdView = layoutInflater.inflate(R.layout.ad_unified, adContainer, false) as UnifiedNativeAdView
                 AdLoader.Builder(context, "ca-app-pub-2194043486084479/5278255298").apply {
@@ -515,6 +516,13 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         var recommendedNewsView: WebView = view.findViewById(R.id.recommended_news2)
         //recommendedNewsView.settings.javaScriptEnabled = true
         recommendedNewsView.setBackgroundColor(Color.BLACK);
+        recommendedNewsView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                if(url.isNullOrEmpty() || url.isBlank()) return false
+                (activity as MainActivity).launchUrl(url)
+                return true
+            }
+        }
         recommendedNewsView.loadDataWithBaseURL(null,recnews,"text/html; charset=utf-8",  "UTF-8",null)
 
         profilesList = view.findViewById(R.id.list)
@@ -532,7 +540,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
                 ItemTouchHelper.START) {
             override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int =
-                    if (isProfileEditable((viewHolder as ProfileViewHolder).item.id) && !(viewHolder as ProfileViewHolder).item.isBuiltin())
+                    if (isProfileEditable((viewHolder as ProfileViewHolder).item.id) /* && !(viewHolder as ProfileViewHolder).item.isBuiltin() */)
                         super.getSwipeDirs(recyclerView, viewHolder) else 0
 
             override fun getDragDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int =
@@ -565,13 +573,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 true
             }
             R.id.action_scan_qr_code -> {
-                try {
-                    val intent = Intent("com.google.zxing.client.android.SCAN")
-                    intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
-                    startActivityForResult(intent, REQUEST_SCAN_QRCODE)
-                } catch (_: ActivityNotFoundException) {
-                    (activity as MainActivity).launchUrl(getString(R.string.faq_url))
-                }
+                startActivity(Intent(context, ScannerActivity::class.java))
                 true
             }
             R.id.action_import_clipboard -> {
@@ -668,7 +670,17 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                             //profilesAdapter.remove(k)
                         }
                     }
-                    profilesAdapter.profiles.sortBy { it.elapsed}
+                    profilesAdapter.notifyDataSetChanged()
+                }
+                catch (e:Exception){
+                    e.printStackTrace()
+                }
+                true
+            }
+
+            R.id.sort_servers_by_speed -> {
+                try {
+                    profilesAdapter.profiles.sortBy {it.elapsed }
                     //configs.vmess.reverse()
                     profilesAdapter.notifyDataSetChanged()
                 }
@@ -709,7 +721,8 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                         while (tcping("127.0.0.1", DataStore.portProxy) < 0 || tcping("127.0.0.1", VpnEncrypt.HTTP_PROXY_PORT) < 0) {
                             Log.e("starting", "$k try $ttt ...")
                             if (ttt == 5) {
-                                Core.showMessage("Server: "+profilesAdapter.profiles[k].name+" caused the test to be interrupted.")
+                                activity?.runOnUiThread() {Core.alertMessage(getString(R.string.toast_test_interrupted,profilesAdapter.profiles[k].name),activity)}
+                                Log.e("realTestProfiles","Server: "+profilesAdapter.profiles[k].name+" or the one before it caused the test to be interrupted.")
                                 Core.stopService()
                                 return@launch
                             }
@@ -737,8 +750,12 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             }
             Core.stopService()
             activity?.runOnUiThread() {
-                profilesAdapter.profiles.sortBy { it.elapsed}
+                //profilesAdapter.profiles.sortBy {it.elapsed ; it.url_group} // 低版本工作，但模拟器安卓10不工作
+                val list=profilesAdapter.profiles.sortedWith(compareBy({ it.url_group }, { it.elapsed }))
+                profilesAdapter.profiles.clear()
+                profilesAdapter.profiles.addAll(list)
                 profilesAdapter.notifyDataSetChanged()
+                Core.alertMessage(getString(R.string.toast_test_ended),activity)
             }
         }
     }
@@ -862,11 +879,6 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                     printLog(e)
                     (activity as MainActivity).snackbar(e.readableMessage).show()
                 }
-            }
-            REQUEST_SCAN_QRCODE -> {
-                val contents = data?.getStringExtra("SCAN_RESULT")
-                val uri = Uri.parse(contents)
-                startActivity(Intent(context, UrlImportActivity::class.java).setData(uri))
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
         }

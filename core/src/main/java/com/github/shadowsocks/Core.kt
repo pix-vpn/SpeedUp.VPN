@@ -24,6 +24,7 @@ import SpeedUpVPN.VpnEncrypt
 import android.app.*
 import android.app.admin.DevicePolicyManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.net.ConnectivityManager
@@ -99,11 +100,6 @@ object Core {
         DataStore.profileId = result.id
         return result
     }
-    fun showMessage(msg: String) {
-        var toast = Toast.makeText(app, msg, Toast.LENGTH_SHORT)
-        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
-        toast.show()
-    }
     fun updateBuiltinServers(activity:Activity? = null){
         Log.e("updateBuiltinServers ","...")
         GlobalScope.launch {
@@ -119,10 +115,10 @@ object Core {
             }
 
             if (builtinSub == null) {
-                activity?.runOnUiThread(){showMessage(app.getString(R.string.status_network_error))}
+                activity?.runOnUiThread(){alertMessage(app.getString(R.string.status_network_error),activity)}
             }else {//如果不是APP启动时更新，则停止服务，提醒重新连接
                 //stopService()
-                activity?.runOnUiThread(){showMessage(app.getString(R.string.update_servers_ok))}
+                activity?.runOnUiThread(){alertMessage(app.getString(R.string.update_servers_ok),activity)}
             }
         }
     }
@@ -161,7 +157,7 @@ object Core {
             setExecutor { GlobalScope.launch { it.run() } }
             setTaskExecutor { GlobalScope.launch { it.run() } }
         }.build())
-        UpdateCheck.enqueue() //google play 发布，禁止自主更新
+        UpdateCheck.enqueue() //google play Publishing, prohibiting self-renewal
 
         // handle data restored/crash
         if (Build.VERSION.SDK_INT >= 24 && DataStore.directBootAware &&
@@ -210,6 +206,21 @@ object Core {
     fun startService() = ContextCompat.startForegroundService(app, Intent(app, ShadowsocksConnection.serviceClass))
     fun reloadService() = app.sendBroadcast(Intent(Action.RELOAD).setPackage(app.packageName))
     fun stopService() = app.sendBroadcast(Intent(Action.CLOSE).setPackage(app.packageName))
-
     fun startServiceForTest() = app.startService(Intent(app, ProxyService::class.java).putExtra("test","go"))
+    fun showMessage(msg: String) {
+        var toast = Toast.makeText(app, msg, Toast.LENGTH_LONG)
+        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
+        toast.show()
+    }
+
+    fun alertMessage(msg: String,activity:Context) {
+        val builder: AlertDialog.Builder? = activity.let {
+            AlertDialog.Builder(activity)
+        }
+        builder?.setMessage(msg)?.setTitle("SS VPN")?.setPositiveButton("ok", DialogInterface.OnClickListener {
+            _, _ ->
+        })
+        val dialog: AlertDialog? = builder?.create()
+        dialog?.show()
+    }
 }

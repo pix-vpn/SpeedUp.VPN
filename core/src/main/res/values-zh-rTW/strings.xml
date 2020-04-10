@@ -9,10 +9,10 @@
     <string name="service_mode_vpn">VPN</string>
     <string name="service_mode_transproxy">"透明代理"</string>
     <string name="share_over_lan">"通過局域網分享"</string>
-    <string name="port_proxy">"SOCKS5 代理端口"</string>
-    <string name="port_local_dns">"本地 DNS 端口"</string>
-    <string name="port_transproxy">"透明代理端口"</string>
-    <string name="port_http">"HTTP代理端口"</string>
+    <string name="port_proxy">"SOCKS5 代理連接埠"</string>
+    <string name="port_local_dns">"本地 DNS 連接埠"</string>
+    <string name="port_transproxy">"透明代理連接埠"</string>
+    <string name="port_http">"HTTP代理連接埠"</string>
 
     <string name="remote_dns">"遠程 DNS"</string>
     <string name="stat_summary">"上傳: \t%3$s\t↑\t%1$s\n下載: \t%4$s\t↓\t%2$s"</string>
@@ -187,8 +187,10 @@
     <string name="title_ping_all_server">測試全部配置Tcping</string>
     <string name="title_real_ping_all_server">測試全部配置真連接</string>
     <string name="title_retest_invalid_servers">再測無效伺服器</string>
-    <string name="title_remove_invalid_servers">刪除無效伺服器並排序</string>
+    <string name="title_remove_invalid_servers">刪除無效伺服器</string>
+    <string name="title_sort_servers_by_speed">按測速結果排序</string>
     <string name="toast_test_ended">啊!測試結束啦!</string>
+    <string name="toast_test_interrupted">伺服器：％s或前一個伺服器導致測試中斷，請檢查之。</string>
     <string name="recommended_site_1"><![CDATA[
     <html>
     <body style=\'margin:0;padding:0;font-size:14px;text-align:right\'>
