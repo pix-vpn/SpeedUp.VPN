@@ -126,7 +126,9 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 }
             }.asSequence().toList().reversed()) {
                 try {
-                    val viewHolder = profilesList.findViewHolderForAdapterPosition(i) as ProfileViewHolder
+                    var viewHolder = profilesList.findViewHolderForAdapterPosition(i)
+					if(viewHolder==null)continue
+					viewHolder = viewHolder  as ProfileViewHolder
                     if (true /*viewHolder.item.isBuiltin()*/) {
                         viewHolder.populateUnifiedNativeAdView(nativeAd!!, nativeAdView!!)
                         // might be in the middle of a layout after scrolling, need to wait
@@ -264,7 +266,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             // This method tells the Google Mobile Ads SDK that you have finished populating your
             // native ad view with this native ad.
             adView.setNativeAd(nativeAd)
-            adView.setBackgroundColor(Color.WHITE) //Adding dividing line for ads
+            //adView.setBackgroundColor(Color.WHITE) //Adding dividing line for ads
             adContainer.setPadding(0,1,0,0)  //Adding dividing line for ads
             adContainer.addView(adView)
             adHost = this
@@ -670,6 +672,9 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                             //profilesAdapter.remove(k)
                         }
                     }
+                    val list=profilesAdapter.profiles.sortedWith(compareBy({ it.url_group }, { it.elapsed }))
+                    profilesAdapter.profiles.clear()
+                    profilesAdapter.profiles.addAll(list)
                     profilesAdapter.notifyDataSetChanged()
                 }
                 catch (e:Exception){

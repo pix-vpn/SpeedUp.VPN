@@ -214,13 +214,18 @@ object Core {
     }
 
     fun alertMessage(msg: String,activity:Context) {
-        val builder: AlertDialog.Builder? = activity.let {
-            AlertDialog.Builder(activity)
+        try {
+            if(activity==null || (activity as Activity).isFinishing)return
+
+            val builder: AlertDialog.Builder? = activity.let {
+                AlertDialog.Builder(activity)
+            }
+            builder?.setMessage(msg)?.setTitle("SpeedUp VPN")?.setPositiveButton("ok", DialogInterface.OnClickListener {
+                _, _ ->
+            })
+            val dialog: AlertDialog? = builder?.create()
+            dialog?.show()
         }
-        builder?.setMessage(msg)?.setTitle("SS VPN")?.setPositiveButton("ok", DialogInterface.OnClickListener {
-            _, _ ->
-        })
-        val dialog: AlertDialog? = builder?.create()
-        dialog?.show()
+        catch (t:Throwable){}
     }
 }

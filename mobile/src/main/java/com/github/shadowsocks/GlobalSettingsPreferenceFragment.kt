@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks
 
+import SpeedUpVPN.VpnEncrypt
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -30,6 +31,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.github.shadowsocks.bg.BaseService
+import com.github.shadowsocks.database.PrivateDatabase
+import com.github.shadowsocks.database.SSRSub
+import com.github.shadowsocks.database.SSRSubManager
 import com.github.shadowsocks.net.TcpFastOpen
 import com.github.shadowsocks.plugin.showAllowingStateLoss
 import com.github.shadowsocks.preference.*
@@ -59,6 +63,13 @@ class GlobalSettingsPreferenceFragment : PreferenceFragmentCompat() {
         findPreference<SwitchPreference>(Key.is_get_free_servers)!!.setOnPreferenceChangeListener { _, value ->
             DataStore.publicStore.putBoolean(Key.is_get_free_servers,  value as Boolean)
             if(value)Core.importFreeSubs()
+            if(!value){
+                val freesub= PrivateDatabase.ssrSubDao.getByGroup(VpnEncrypt.freesubGroupName)
+                if (freesub!=null) {
+                    SSRSubManager.deletProfiles(freesub)
+                    SSRSubManager.delSSRSub(freesub.id)
+                }
+            }
             true
         }
         findPreference<SwitchPreference>(Key.persistAcrossReboot)!!.setOnPreferenceChangeListener { _, value ->

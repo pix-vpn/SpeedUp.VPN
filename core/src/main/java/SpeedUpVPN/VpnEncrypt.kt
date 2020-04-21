@@ -12,7 +12,7 @@ object VpnEncrypt{
     private const val theKey="your aes key"
     const val freesuburl="https://raw.githubusercontent.com/ssrsub/ssr/master/ssrsub"
     const val vpnGroupName="SpeedUp.VPN"
-    const val freesubGroupName="free.SSR"
+    const val freesubGroupName="https://git.io/jmsfq"
     const val testing="test..."
     @JvmStatic fun aesEncrypt(v:String, secretKey:String=theKey) = AES256.encrypt(v, secretKey)
     @JvmStatic fun aesDecrypt(v:String, secretKey:String=theKey) = AES256.decrypt(v, secretKey)
