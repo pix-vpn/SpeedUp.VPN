@@ -639,17 +639,19 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 profilesAdapter.notifyDataSetChanged()
 
                 for (k in 0 until profilesAdapter.profiles.size) {
-                    Log.e("tcping","$k")
-                    GlobalScope.launch {
-                        profilesAdapter.profiles[k].elapsed = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
-                        ProfileManager.updateProfile(profilesAdapter.profiles[k])
-                        Log.e("tcping","$k - "+profilesAdapter.profiles[k].elapsed)
-                        activity?.runOnUiThread() {
-                            Log.e("tcping","$k - update")
-                            profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
+                    try {
+                        Log.e("tcping", "$k")
+                        GlobalScope.launch {
+                            profilesAdapter.profiles[k].elapsed = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
+                            ProfileManager.updateProfile(profilesAdapter.profiles[k])
+                            Log.e("tcping", "$k - " + profilesAdapter.profiles[k].elapsed)
+                            activity?.runOnUiThread() {
+                                Log.e("tcping", "$k - update")
+                                profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
+                            }
                         }
                     }
-
+                    catch(e:IndexOutOfBoundsException){}
                 }
                 true
             }
@@ -726,7 +728,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                         while (tcping("127.0.0.1", DataStore.portProxy) < 0 || tcping("127.0.0.1", VpnEncrypt.HTTP_PROXY_PORT) < 0) {
                             Log.e("starting", "$k try $ttt ...")
                             if (ttt == 5) {
-                                activity?.runOnUiThread() {Core.alertMessage(getString(R.string.toast_test_interrupted,profilesAdapter.profiles[k].name),activity)}
+                                activity.runOnUiThread() {Core.alertMessage(activity.getString(R.string.toast_test_interrupted,profilesAdapter.profiles[k].name),activity)}
                                 Log.e("realTestProfiles","Server: "+profilesAdapter.profiles[k].name+" or the one before it caused the test to be interrupted.")
                                 Core.stopService()
                                 return@launch
@@ -760,7 +762,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 profilesAdapter.profiles.clear()
                 profilesAdapter.profiles.addAll(list)
                 profilesAdapter.notifyDataSetChanged()
-                Core.alertMessage(getString(R.string.toast_test_ended),activity)
+                try{Core.alertMessage(activity.getString(R.string.toast_test_ended),activity)}catch (t:Throwable){}
             }
         }
     }
