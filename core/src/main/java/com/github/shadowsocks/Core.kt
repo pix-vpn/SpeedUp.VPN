@@ -19,7 +19,6 @@
  *******************************************************************************/
 
 package com.github.shadowsocks
-
 import SpeedUpVPN.VpnEncrypt
 import android.app.*
 import android.app.admin.DevicePolicyManager
@@ -129,7 +128,11 @@ object Core {
     fun importFreeSubs(): Boolean {
         try {
             GlobalScope.launch {
-                SSRSubManager.createBuiltinSub(VpnEncrypt.freesuburl)
+                var  freesuburl  = app.resources.getStringArray(R.array.freesuburl)
+                for (i in freesuburl.indices) {
+                    var freeSub=SSRSubManager.createBuiltinSub(freesuburl[i])
+                    if (freeSub != null) break
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

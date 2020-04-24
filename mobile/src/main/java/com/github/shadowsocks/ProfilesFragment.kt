@@ -706,9 +706,9 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             Core.stopService()
             var isProxyStarted=false
             for (k in 0 until profilesAdapter.profiles.size) {
-                if(testInvalidOnly && profilesAdapter.profiles[k].elapsed>0)continue
-                Log.e("real_ping_all",k.toString())
                 try {
+                    if(testInvalidOnly && profilesAdapter.profiles[k].elapsed>0)continue
+                    Log.e("real_ping_all",k.toString())
                     profilesAdapter.profiles[k].elapsed=-2
                     val old = DataStore.profileId
                     Core.switchProfile(profilesAdapter.profiles[k].id)
@@ -728,7 +728,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                         while (tcping("127.0.0.1", DataStore.portProxy) < 0 || tcping("127.0.0.1", VpnEncrypt.HTTP_PROXY_PORT) < 0) {
                             Log.e("starting", "$k try $ttt ...")
                             if (ttt == 5) {
-                                activity.runOnUiThread() {Core.alertMessage(activity.getString(R.string.toast_test_interrupted,profilesAdapter.profiles[k].name),activity)}
+                                activity?.runOnUiThread() {Core.alertMessage(activity.getString(R.string.toast_test_interrupted,profilesAdapter.profiles[k].name),activity)}
                                 Log.e("realTestProfiles","Server: "+profilesAdapter.profiles[k].name+" or the one before it caused the test to be interrupted.")
                                 Core.stopService()
                                 return@launch

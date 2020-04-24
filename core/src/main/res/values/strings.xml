@@ -220,5 +220,8 @@
   <string-array name="builtinSubUrls">
     <item>https://your_builtinSubUrls.com/path/sub.txt</item>
   </string-array>
+  <string-array name="freesuburl">
+    <item>https://your_freeSubUrls.com/path/sub.txt</item>
+  </string-array>
   <string name="update_check_url">https://raw.githubusercontent.com/bannedbook/SpeedUp.VPN/master/update.json</string>
 </resources>
