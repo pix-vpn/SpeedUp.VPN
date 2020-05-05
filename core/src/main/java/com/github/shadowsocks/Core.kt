@@ -117,7 +117,7 @@ object Core {
                 activity?.runOnUiThread(){alertMessage(app.getString(R.string.status_network_error),activity)}
             }else {//如果不是APP启动时更新，则停止服务，提醒重新连接
                 //stopService()
-                activity?.runOnUiThread(){alertMessage(app.getString(R.string.update_servers_ok),activity)}
+                //activity?.runOnUiThread(){alertMessage(app.getString(R.string.update_servers_ok),activity)}
             }
         }
     }
