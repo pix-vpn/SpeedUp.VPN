@@ -36,10 +36,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.Proxy
-import java.net.URL
-import java.net.URLConnection
+import java.net.*
 
 /**
  * Based on: https://android.googlesource.com/platform/frameworks/base/+/b19a838/services/core/java/com/android/server/connectivity/NetworkMonitor.java#1071
@@ -89,7 +86,7 @@ class HttpsTest : ViewModel() {
             else -> "www.google.com"
         }, "/generate_204")
         val conn = (if (DataStore.serviceMode != Key.modeVpn) {
-            url.openConnection(Proxy(Proxy.Type.SOCKS, DataStore.proxyAddress))
+            url.openConnection(Proxy(Proxy.Type.HTTP, InetSocketAddress("127.0.0.1", DataStore.portHttpProxy)))
         } else url.openConnection()) as HttpURLConnection
         conn.setRequestProperty("Connection", "close")
         conn.instanceFollowRedirects = false
