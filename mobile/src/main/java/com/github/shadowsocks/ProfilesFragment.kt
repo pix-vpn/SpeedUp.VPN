@@ -713,10 +713,12 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                     val old = DataStore.profileId
                     Core.switchProfile(profilesAdapter.profiles[k].id)
                     activity?.runOnUiThread() {
+                        try {activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)}catch (e:Exception){}
                         layoutManager.scrollToPositionWithOffset(k, 0)
-                        layoutManager.stackFromEnd = true
+                        //layoutManager.stackFromEnd = true
                         profilesAdapter.refreshId(old)
                         profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
+                        try {activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)}catch (e:Exception){}
                     }
 
                     var result = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
@@ -764,6 +766,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 profilesAdapter.notifyDataSetChanged()
                 try{Core.alertMessage(activity.getString(R.string.toast_test_ended),activity)}catch (t:Throwable){}
             }
+            try {activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)}catch (e:Exception){}
         }
     }
 
