@@ -50,11 +50,19 @@ object ProfileManager {
 
     @Throws(SQLException::class)
     fun createProfile(profile: Profile = Profile()): Profile {
-        profile.id = 0
-        profile.userOrder = PrivateDatabase.profileDao.nextOrder() ?: 0
-        profile.id = PrivateDatabase.profileDao.create(profile)
-        listener?.onAdd(profile)
-        return profile
+        var existOne=PrivateDatabase.profileDao.getByHost(profile.host)
+        if (existOne==null) {
+            profile.id = 0
+            profile.userOrder = PrivateDatabase.profileDao.nextOrder() ?: 0
+            profile.id = PrivateDatabase.profileDao.create(profile)
+            listener?.onAdd(profile)
+            return profile
+        }
+        else {
+            existOne.updateWith(profile)
+            return profile
+        }
+
     }
 
     fun deletSSRSubProfiles(profiles: List<Profile>) {
@@ -83,7 +91,7 @@ object ProfileManager {
         profiles.filter {
             for (i: Profile in old) if (it.isSameAs(i)) {
                 old.remove(i)
-                return@filter false
+                return@filter true  //change to true, because old one also need update
             }
             return@filter true
         }.forEach {
@@ -99,7 +107,7 @@ object ProfileManager {
         old.remove(activeProfile)
         deletBuiltinSSRSubProfiles(old)
         profiles.forEach {
-            if(activeProfile==null || !activeProfile.isSameHostAs(it))
+            if(activeProfile==null || !activeProfile.isSameAs(it))
                 createProfile(it)
             else {
                 activeProfile.updateWith(it)

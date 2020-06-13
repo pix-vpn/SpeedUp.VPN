@@ -144,7 +144,10 @@ data class Profile(
                     val match4 = decodedPattern_ssr_groupparam.matchEntire(match.groupValues[8])
                     if (match4 != null) profile.url_group = base64Decode(match4.groupValues[2])
 
-                    profile
+                    if (profile.name.startsWith("CN-GD",true) || profile.name=="地址错误")
+                        null
+                    else
+                        profile
                 } else {
                     null
                 }
@@ -313,6 +316,9 @@ data class Profile(
         @Query("SELECT * FROM `Profile` WHERE `id` = :id")
         operator fun get(id: Long): Profile?
 
+        @Query("SELECT * FROM `Profile` WHERE `host` = :host LIMIT 1")
+        fun getByHost(host: String): Profile?
+
         @Query("SELECT * FROM `Profile` WHERE `Subscription` != 2 ORDER BY `userOrder`")
         fun listActive(): List<Profile>
 
@@ -377,9 +383,9 @@ data class Profile(
         }
     }
 
-    fun isSameHostAs(other: Profile): Boolean = other.host == host
+    fun isSameAs(other: Profile): Boolean = other.host == host
     fun updateWith(other: Profile){
-        if (!isSameHostAs(other))return
+        if (!isSameAs(other))return
         host = other.host
         remotePort = other.remotePort
         password = other.password
@@ -391,12 +397,6 @@ data class Profile(
         name = other.name
         url_group = other.url_group
     }
-
-    fun isSameAs(other: Profile): Boolean = other.host == host && other.remotePort == remotePort &&
-            other.password == password && other.method == method &&
-            other.protocol == protocol && other.protocol_param == protocol_param &&
-            other.obfs == obfs && other.obfs_param == obfs_param &&
-            other.name == name && other.url_group == url_group
 
     override fun toString(): String {
         val flags = Base64.NO_PADDING or Base64.URL_SAFE or Base64.NO_WRAP
@@ -489,6 +489,6 @@ data class Profile(
         udpFallback = DataStore.udpFallback
     }
     fun isBuiltin(): Boolean {
-        return VpnEncrypt.vpnGroupName == url_group
+        return url_group == VpnEncrypt.vpnGroupName  || url_group == VpnEncrypt.freesubGroupName
     }
 }

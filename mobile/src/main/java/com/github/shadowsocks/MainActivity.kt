@@ -24,6 +24,7 @@ import android.app.Activity
 import android.app.backup.BackupManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ShortcutManager
 import android.net.VpnService
 import android.os.Build
@@ -58,9 +59,12 @@ import com.github.shadowsocks.utils.getBitmap
 import com.github.shadowsocks.widget.ListHolderListener
 import com.github.shadowsocks.widget.ServiceButton
 import com.github.shadowsocks.widget.StatsBar
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.gms.ads.*
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPreferenceDataStoreChangeListener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -181,6 +185,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         }
     }
     lateinit var mAdView : AdView
+    var prefs: SharedPreferences? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;//会导致statusbar有时不能自动缩回，改为在AndroidMainfest.xml设置
@@ -189,9 +194,9 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         setContentView(R.layout.layout_main)
 
         MobileAds.initialize(this) {}
-        mAdView = findViewById(R.id.adView)
-        val adRequest = AdRequest.Builder().build()
-        mAdView.loadAd(adRequest)
+//        mAdView = findViewById(R.id.adView)
+//        val adRequest = AdRequest.Builder().build()
+//        mAdView.loadAd(adRequest)
 
         snackbar = findViewById(R.id.snackbar)
         snackbar.setOnApplyWindowInsetsListener(ListHolderListener)
@@ -226,10 +231,21 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         recommendedNewsView.setBackgroundColor(Color.TRANSPARENT);
         recommendedNewsView.loadDataWithBaseURL(null,recnews,"text/html; charset=utf-8",  "UTF-8",null)
 */
+        try {prefs = getSharedPreferences("free.ssr.proxy.SpeedUp.VPN", MODE_PRIVATE)}catch (e:Exception){}
         //导入内置订阅
         if(DataStore.isAutoUpdateServers)Core.updateBuiltinServers()
     }
-
+    override fun onResume() {
+        super.onResume()
+        try {
+            if (prefs!!.getBoolean("firstrun", true)) {
+                // Do first run stuff here then set 'firstrun' as false
+                Core.alertMessage(getString(R.string.firstrun_tips), this,getString(R.string.firstrun_tips_title))
+                // using the following line to edit/commit prefs
+                prefs!!.edit().putBoolean("firstrun", false).commit()
+            }
+        }catch (e:Exception){}
+    }
     override fun onPreferenceDataStoreChanged(store: PreferenceDataStore, key: String) {
         when (key) {
             Key.serviceMode -> handler.post {

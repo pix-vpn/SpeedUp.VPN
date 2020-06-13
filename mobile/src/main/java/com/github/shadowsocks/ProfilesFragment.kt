@@ -34,10 +34,7 @@ import android.os.SystemClock
 import android.text.format.Formatter
 import android.util.Log
 import android.util.LongSparseArray
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
@@ -129,7 +126,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                     var viewHolder = profilesList.findViewHolderForAdapterPosition(i)
 					if(viewHolder==null)continue
 					viewHolder = viewHolder  as ProfileViewHolder
-                    if (viewHolder.item.isBuiltin()) {
+                    if (viewHolder.item.isBuiltin() && viewHolder.item.id<3) {
                         viewHolder.populateUnifiedNativeAdView(nativeAd!!, nativeAdView!!)
                         // might be in the middle of a layout after scrolling, need to wait
                         withContext(Dispatchers.Main) { profilesAdapter.notifyItemChanged(i) }
@@ -273,7 +270,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         }
 
         fun attach() {
-            if (adHost != null /*|| !item.isBuiltin()*/) return
+            if (adHost != null || !item.isBuiltin()) return
             if (nativeAdView == null) {
                 nativeAdView = layoutInflater.inflate(R.layout.ad_unified, adContainer, false) as UnifiedNativeAdView
                 AdLoader.Builder(context, "ca-app-pub-2194043486084479/5278255298").apply {
@@ -571,7 +568,6 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         return when (item.itemId) {
             R.id.update_servers -> {
                 Core.updateBuiltinServers(activity)
-                if(DataStore.is_get_free_servers)Core.importFreeSubs()
                 true
             }
             R.id.action_scan_qr_code -> {

@@ -191,6 +191,8 @@
     <string name="title_sort_servers_by_speed">按測速結果排序</string>
     <string name="toast_test_ended">啊!測試結束啦!</string>
     <string name="toast_test_interrupted">"伺服器：%s或前一個伺服器導致測試中斷，請檢查之。"</string>
+    <string name="firstrun_tips_title">"首次啟動提示,請仔細閱讀或截圖保存"</string>
+    <string name="firstrun_tips">"自動更新的網路免費伺服器包括一些無效伺服器，請點右上角三個點的按鈕，執行‘測試全部配置真連接’ ，然後再執行‘刪除無效/按組排序’ 和 ‘按測速結果排序’。然後點擊選中一個服務器，再點底部中間的啟動VPN的圓形按鈕。"</string>
     <string name="recommended_site_1"><![CDATA[
     <html>
     <body style=\'margin:0;padding:0;font-size:14px;text-align:right\'>
@@ -211,7 +213,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 </head>
     <body style=\'margin:0 auto;padding:5px 0;font-size:14px;text-align:center\'>
-      <a href=\'https://www.bannedbook.org/bnews/zh-tw/?utm_source=speedup.vpn.b5\' style=\'color:#e4f2fd\'>中美港臺時事熱點：每日火爆新聞，焦點評論</a>
+      <a href=\'https://play.google.com/store/apps/details?id=free.v2ray.proxy.VPN\' style=\'color:#e4f2fd\'>V2ray VPN：免费快速稳定不限流量</a>
     </body>
     </html>
   ]]>"</string>

@@ -95,9 +95,9 @@ object SSRSubManager {
             profiles = profiles.shuffled().take(limit)
         }
 
-        if(ssrSub.isBuiltin())
-            ProfileManager.createBuiltinProfilesFromSub(profiles)
-        else
+        //if(ssrSub.isBuiltin())
+            //ProfileManager.createBuiltinProfilesFromSub(profiles)
+        //else
             ProfileManager.createProfilesFromSub(profiles, ssrSub.url_group)
     }
 

@@ -62,6 +62,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.util.*
 import kotlin.reflect.KClass
 
 object Core {
@@ -102,23 +103,29 @@ object Core {
     fun updateBuiltinServers(activity:Activity? = null){
         Log.e("updateBuiltinServers ","...")
         GlobalScope.launch {
-            var  builtinSubUrls  = app.resources.getStringArray(com.github.shadowsocks.core.R.array.builtinSubUrls)
-            var builtinSub:SSRSub?=null
-            for (i in builtinSubUrls.indices) {
-                builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls[i],"aes")
-                if (builtinSub != null) {
-                    //val randomOne=ProfileManager.getRandomVPNServer()
-                    //if (randomOne!=null)DataStore.profileId=randomOne.id
-                    break
+            val userCountry= Locale.getDefault().country
+            Log.e("userCountry",userCountry)
+            if ("CN" != userCountry){
+                var  builtinSubUrls  = app.resources.getStringArray(R.array.builtinSubUrls)
+                var builtinSub:SSRSub?=null
+                for (i in builtinSubUrls.indices) {
+                    builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls[i],"aes")
+                    if (builtinSub != null) {
+                        //val randomOne=ProfileManager.getRandomVPNServer()
+                        //if (randomOne!=null)DataStore.profileId=randomOne.id
+                        break
+                    }
+                }
+                if (builtinSub == null) {
+                    activity?.runOnUiThread(){alertMessage(app.getString(R.string.status_network_error),activity)}
+                }else {//如果不是APP启动时更新，则停止服务，提醒重新连接
+                    //stopService()
+                    //activity?.runOnUiThread(){alertMessage(app.getString(R.string.update_servers_ok),activity)}
                 }
             }
 
-            if (builtinSub == null) {
-                activity?.runOnUiThread(){alertMessage(app.getString(R.string.status_network_error),activity)}
-            }else {//如果不是APP启动时更新，则停止服务，提醒重新连接
-                //stopService()
-                //activity?.runOnUiThread(){alertMessage(app.getString(R.string.update_servers_ok),activity)}
-            }
+            if(DataStore.is_get_free_servers)importFreeSubs() //update free_servers
+            app.startService(Intent(app, SubscriptionService::class.java)) //update Subscription
         }
     }
 
@@ -216,14 +223,14 @@ object Core {
         toast.show()
     }
 
-    fun alertMessage(msg: String,activity:Context) {
+    fun alertMessage(msg: String,activity:Context,title:String="SpeedUp VPN") {
         try {
             if(activity==null || (activity as Activity).isFinishing)return
 
             val builder: AlertDialog.Builder? = activity.let {
                 AlertDialog.Builder(activity)
             }
-            builder?.setMessage(msg)?.setTitle("SpeedUp VPN")?.setPositiveButton("ok", DialogInterface.OnClickListener {
+            builder?.setMessage(msg)?.setTitle(title)?.setPositiveButton("ok", DialogInterface.OnClickListener {
                 _, _ ->
             })
             val dialog: AlertDialog? = builder?.create()
