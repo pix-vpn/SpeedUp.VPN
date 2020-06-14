@@ -51,4 +51,7 @@ class SSRSub(
     fun isBuiltin(): Boolean {
         return VpnEncrypt.vpnGroupName == url_group
     }
+    fun isBuiltin2(): Boolean {
+        return VpnEncrypt.freesubGroupName == url_group
+    }
 }

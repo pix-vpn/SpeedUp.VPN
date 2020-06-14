@@ -148,13 +148,14 @@ class SubscriptionFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener 
 
         @SuppressLint("SetTextI18n")
         fun bind(item: SSRSub) {
+            if(item.isBuiltin()||item.isBuiltin2())return
             this.item = item
             text.text = "${item.getStatue(requireContext())}\t${item.url_group}"
         }
 
         override fun onClick(v: View?) {
             if (item.id == 0L) return
-            if (item.isBuiltin() || VpnEncrypt.freesubGroupName == item.url_group) return
+            if(item.isBuiltin()||item.isBuiltin2()) return
             SubDialogFragment().withArg(SubItem(adapterPosition, item.url, item.url_group))
                     .show(this@SubscriptionFragment, REQUEST_CODE_EDIT)
         }

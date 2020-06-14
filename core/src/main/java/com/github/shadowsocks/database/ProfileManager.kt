@@ -87,6 +87,7 @@ object ProfileManager {
     }
 
     fun createProfilesFromSub(profiles: List<Profile>, group: String) {
+        if (profiles.isNullOrEmpty())return
         val old = getAllProfilesByGroup(group).toMutableList()
         profiles.filter {
             for (i: Profile in old) if (it.isSameAs(i)) {

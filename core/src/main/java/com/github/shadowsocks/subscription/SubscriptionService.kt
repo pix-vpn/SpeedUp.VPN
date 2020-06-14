@@ -122,6 +122,7 @@ class SubscriptionService : Service(), CoroutineScope {
 
     private suspend fun fetchJson(ssrSub: SSRSub, max: Int, notification: NotificationCompat.Builder) {
         try {
+            if (ssrSub.isBuiltin()||ssrSub.isBuiltin2())return
             SSRSubManager.update(ssrSub)
         } catch (e: Exception) {
             ssrSub.status = SSRSub.NETWORK_ERROR
