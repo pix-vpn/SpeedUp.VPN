@@ -101,6 +101,22 @@ object ProfileManager {
         }
         deletSSRSubProfiles(old)
     }
+    
+    fun createProfilesFromSub2(profiles: List<Profile>, group: String) {
+        if (profiles.isNullOrEmpty())return
+        val old = getAllProfilesByGroup(group).toMutableList()
+        profiles.forEach {
+            for (i: Profile in old)  {
+                if (it.isSameAs(i)){
+                    old.remove(i)
+                    break
+                }
+            }
+            it.subscription = Profile.SubscriptionStatus.Active
+            createProfile(it)
+        }
+        deletSSRSubProfiles(old)
+    }
 
     fun createBuiltinProfilesFromSub(profiles: List<Profile>) {
         val old = getAllProfilesByGroup(VpnEncrypt.vpnGroupName).toMutableList()

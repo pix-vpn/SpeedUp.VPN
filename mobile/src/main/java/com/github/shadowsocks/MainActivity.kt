@@ -59,12 +59,9 @@ import com.github.shadowsocks.utils.getBitmap
 import com.github.shadowsocks.widget.ListHolderListener
 import com.github.shadowsocks.widget.ServiceButton
 import com.github.shadowsocks.widget.StatsBar
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPreferenceDataStoreChangeListener,
         NavigationView.OnNavigationItemSelectedListener {
@@ -184,7 +181,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
             }
         }
     }
-    lateinit var mAdView : AdView
+    //lateinit var mAdView : AdView
     var prefs: SharedPreferences? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -225,12 +222,6 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         connection.connect(this, this)
         DataStore.publicStore.registerChangeListener(this)
         updateShortcuts()
-/*
-        var recnews= getString(R.string.recommended_news)
-        var recommendedNewsView : WebView= findViewById(R.id.recommended_news)
-        recommendedNewsView.setBackgroundColor(Color.TRANSPARENT);
-        recommendedNewsView.loadDataWithBaseURL(null,recnews,"text/html; charset=utf-8",  "UTF-8",null)
-*/
         try {prefs = getSharedPreferences("free.ssr.proxy.SpeedUp.VPN", MODE_PRIVATE)}catch (e:Exception){}
         //导入内置订阅
         if(DataStore.isAutoUpdateServers)Core.updateBuiltinServers()
@@ -244,7 +235,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
                 // using the following line to edit/commit prefs
                 prefs!!.edit().putBoolean("firstrun", false).commit()
             }
-        }catch (e:Exception){}
+        }catch (e:Throwable){}
     }
     override fun onPreferenceDataStoreChanged(store: PreferenceDataStore, key: String) {
         when (key) {
