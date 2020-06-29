@@ -137,7 +137,7 @@ class SubscriptionFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener 
 
     private inner class SubViewHolder(view: View) : RecyclerView.ViewHolder(view),
             View.OnClickListener {
-        lateinit var item: SSRSub
+        var item: SSRSub? = null
         private val text = view.findViewById<TextView>(android.R.id.text1)
 
         init {
@@ -154,9 +154,10 @@ class SubscriptionFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener 
         }
 
         override fun onClick(v: View?) {
-            if (item.id == 0L) return
-            if(item.isBuiltin()||item.isBuiltin2()) return
-            SubDialogFragment().withArg(SubItem(adapterPosition, item.url, item.url_group))
+            if (item==null) return
+            if (item?.id == 0L) return
+            if(item!!.isBuiltin()||item!!.isBuiltin2()) return
+            SubDialogFragment().withArg(SubItem(adapterPosition, item!!.url, item!!.url_group))
                     .show(this@SubscriptionFragment, REQUEST_CODE_EDIT)
         }
     }
@@ -225,7 +226,7 @@ class SubscriptionFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val index = viewHolder.adapterPosition
-                if ((viewHolder as SubViewHolder).item.id == 0L) adapter.notifyItemChanged(index)
+                if ((viewHolder as SubViewHolder).item?.id == 0L) adapter.notifyItemChanged(index)
                 else adapter.del(index)
             }
 
@@ -269,7 +270,7 @@ class SubscriptionFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener 
                     } catch (e: Exception) {
                         printLog(e)
                         GlobalScope.launch(Dispatchers.Main) {
-                            (activity as MainActivity)?.snackbar()?.setText(e.readableMessage)?.show()
+                            if(activity!=null)(activity as MainActivity)?.snackbar()?.setText(e.readableMessage)?.show()
                         }
                     } finally {
                         withContext(Dispatchers.Main) {

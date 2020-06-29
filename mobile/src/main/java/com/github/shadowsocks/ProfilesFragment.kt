@@ -19,6 +19,7 @@
  *******************************************************************************/
 
 package com.github.shadowsocks
+
 import SpeedUpVPN.VpnEncrypt
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -26,6 +27,7 @@ import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
@@ -124,23 +126,23 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             }.asSequence().toList().reversed()) {
                 try {
                     var viewHolder = profilesList.findViewHolderForAdapterPosition(i)
-					if(viewHolder==null)continue
-					viewHolder = viewHolder  as ProfileViewHolder
-                    if (viewHolder.item.isBuiltin() && viewHolder.item.id<3) {
+                    if (viewHolder == null) continue
+                    viewHolder = viewHolder as ProfileViewHolder
+                    if (viewHolder.item.isBuiltin() && viewHolder.item.id < 3) {
                         viewHolder.populateUnifiedNativeAdView(nativeAd!!, nativeAdView!!)
                         // might be in the middle of a layout after scrolling, need to wait
                         withContext(Dispatchers.Main) { profilesAdapter.notifyItemChanged(i) }
                         break
                     }
-                }catch (ex:Exception){
-                    Log.e("ssvpn",ex.message,ex)
-		    printLog(ex)
+                } catch (ex: Exception) {
+                    Log.e("ssvpn", ex.message, ex)
+                    printLog(ex)
                     continue
                 }
             }
-        }catch (e:Exception){
-            Log.e("ssvpn",e.message,e)
-	    printLog(e)
+        } catch (e: Exception) {
+            Log.e("ssvpn", e.message, e)
+            printLog(e)
         }
     }
 
@@ -264,7 +266,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             // native ad view with this native ad.
             adView.setNativeAd(nativeAd)
             //adView.setBackgroundColor(Color.WHITE) //Adding dividing line for ads
-            adContainer.setPadding(0,1,0,0)  //Adding dividing line for ads
+            adContainer.setPadding(0, 1, 0, 0)  //Adding dividing line for ads
             adContainer.addView(adView)
             adHost = this
         }
@@ -320,11 +322,11 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             text1.text = item.formattedName
             text2.text = item.url_group
             val context = requireContext()
-            traffic.text =ArrayList<String>().apply {
-                if (item.elapsed > 0L ) this += String.format("%dms", item.elapsed)
-                if (item.elapsed == -1L ) this += "failed"
-                if (item.elapsed == -2L ) this += VpnEncrypt.testing
-                if (tx > 0 || rx > 0) this +=  getString(R.string.traffic,
+            traffic.text = ArrayList<String>().apply {
+                if (item.elapsed > 0L) this += String.format("%dms", item.elapsed)
+                if (item.elapsed == -1L) this += "failed"
+                if (item.elapsed == -2L) this += VpnEncrypt.testing
+                if (tx > 0 || rx > 0) this += getString(R.string.traffic,
                         Formatter.formatFileSize(context, tx), Formatter.formatFileSize(context, rx))
             }.joinToString(" \t")
 
@@ -370,7 +372,8 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
     }
 
     inner class ProfilesAdapter : RecyclerView.Adapter<ProfileViewHolder>(), ProfileManager.Listener {
-        internal val profiles = ProfileManager.getProfilesOrderlySpeed()?.toMutableList() ?: mutableListOf()
+        internal val profiles = ProfileManager.getProfilesOrderlySpeed()?.toMutableList()
+                ?: mutableListOf()
         private val updated = HashSet<Profile>()
 
         init {
@@ -382,12 +385,12 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
             try {
                 holder.bind(profiles[position])
-            }
-            catch (e:Exception){
-                Log.e("speedup.vpn","",e)
+            } catch (e: Exception) {
+                Log.e("speedup.vpn", "", e)
             }
 
         }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewHolder = ProfileViewHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.layout_profile, parent, false))
 
@@ -395,9 +398,8 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         override fun getItemId(position: Int): Long {
             try {
                 return profiles[position].id
-            }
-            catch (e:Exception){
-                Log.e("speedup.vpn","",e)
+            } catch (e: Exception) {
+                Log.e("speedup.vpn", "", e)
                 return 0
             }
         }
@@ -407,7 +409,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             val pos = itemCount
             profiles += profile
             (activity as MainActivity).runOnUiThread({
-            notifyItemInserted(pos)
+                notifyItemInserted(pos)
             })
         }
 
@@ -468,7 +470,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             if (index < 0) return
             profiles.removeAt(index)
             (activity as MainActivity).runOnUiThread({
-            notifyItemRemoved(index)
+                notifyItemRemoved(index)
             })
             if (profileId == DataStore.profileId) DataStore.profileId = 0   // switch to null profile
         }
@@ -517,12 +519,12 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         recommendedNewsView.setBackgroundColor(Color.BLACK);
         recommendedNewsView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                if(url.isNullOrEmpty() || url.isBlank()) return false
+                if (url.isNullOrEmpty() || url.isBlank()) return false
                 (activity as MainActivity).launchUrl(url)
                 return true
             }
         }
-        recommendedNewsView.loadDataWithBaseURL(null,recnews,"text/html; charset=utf-8",  "UTF-8",null)
+        recommendedNewsView.loadDataWithBaseURL(null, recnews, "text/html; charset=utf-8", "UTF-8", null)
 
         profilesList = view.findViewById(R.id.list)
         profilesList.setOnApplyWindowInsetsListener(MainListListener)
@@ -635,9 +637,9 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 profilesAdapter.notifyDataSetChanged()
 
                 for (k in 0 until profilesAdapter.profiles.size) {
-                    try {
-                        Log.e("tcping", "$k")
-                        GlobalScope.launch {
+                    GlobalScope.launch {
+                        try {
+                            Log.e("tcping", "$k")
                             profilesAdapter.profiles[k].elapsed = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
                             ProfileManager.updateProfile(profilesAdapter.profiles[k])
                             Log.e("tcping", "$k - " + profilesAdapter.profiles[k].elapsed)
@@ -645,9 +647,9 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                                 Log.e("tcping", "$k - update")
                                 profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
                             }
+                        } catch (e: IndexOutOfBoundsException) {
                         }
                     }
-                    catch(e:IndexOutOfBoundsException){}
                 }
                 true
             }
@@ -664,18 +666,17 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
 
             R.id.remove_invalid_servers -> {
                 try {
-                    for (k in profilesAdapter.profiles.size-1 downTo  0 ) {
-                        if (profilesAdapter.profiles[k].elapsed == -1L){
+                    for (k in profilesAdapter.profiles.size - 1 downTo 0) {
+                        if (profilesAdapter.profiles[k].elapsed == -1L) {
                             ProfileManager.delProfile(profilesAdapter.profiles[k].id)
                             //profilesAdapter.remove(k)
                         }
                     }
-                    val list=profilesAdapter.profiles.sortedWith(compareBy({ it.url_group }, { it.elapsed }))
+                    val list = profilesAdapter.profiles.sortedWith(compareBy({ it.url_group }, { it.elapsed }))
                     profilesAdapter.profiles.clear()
                     profilesAdapter.profiles.addAll(list)
                     profilesAdapter.notifyDataSetChanged()
-                }
-                catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
                 true
@@ -683,11 +684,10 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
 
             R.id.sort_servers_by_speed -> {
                 try {
-                    profilesAdapter.profiles.sortBy {it.elapsed }
+                    profilesAdapter.profiles.sortBy { it.elapsed }
                     //configs.vmess.reverse()
                     profilesAdapter.notifyDataSetChanged()
-                }
-                catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
                 true
@@ -696,38 +696,45 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         }
     }
 
-    private fun realTestProfiles(testInvalidOnly:Boolean) {
+    private fun realTestProfiles(testInvalidOnly: Boolean) {
         GlobalScope.launch {
             val activity = activity as MainActivity
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
             Core.stopService()
-            var isProxyStarted=false
+            var isProxyStarted = false
             for (k in 0 until profilesAdapter.profiles.size) {
                 try {
-                    if(testInvalidOnly && profilesAdapter.profiles[k].elapsed>0)continue
-                    Log.e("real_ping_all",k.toString())
-                    profilesAdapter.profiles[k].elapsed=-2
+                    if (testInvalidOnly && profilesAdapter.profiles[k].elapsed > 0) continue
+                    Log.e("real_ping_all", k.toString())
+                    profilesAdapter.profiles[k].elapsed = -2
                     val old = DataStore.profileId
                     Core.switchProfile(profilesAdapter.profiles[k].id)
                     activity?.runOnUiThread() {
-                        try {activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)}catch (e:Exception){}
+                        try {
+                            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        } catch (e: Exception) {
+                        }
                         layoutManager.scrollToPositionWithOffset(k, 0)
                         //layoutManager.stackFromEnd = true
                         profilesAdapter.refreshId(old)
                         profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
-                        try {activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)}catch (e:Exception){}
+                        try {
+                            activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        } catch (e: Exception) {
+                        }
                     }
 
                     var result = tcping(profilesAdapter.profiles[k].host, profilesAdapter.profiles[k].remotePort)
-                    if( result > 0) {
-                        if(!isProxyStarted)Core.startServiceForTest()
+                    if (result > 0) {
+                        if (!isProxyStarted) Core.startServiceForTest()
                         else Core.reloadService()
 
                         var ttt = 0
                         while (tcping("127.0.0.1", DataStore.portProxy) < 0 || tcping("127.0.0.1", VpnEncrypt.HTTP_PROXY_PORT) < 0) {
                             Log.e("starting", "$k try $ttt ...")
                             if (ttt == 5) {
-                                activity?.runOnUiThread() {Core.alertMessage(activity.getString(R.string.toast_test_interrupted,profilesAdapter.profiles[k].name),activity)}
-                                Log.e("realTestProfiles","Server: "+profilesAdapter.profiles[k].name+" or the one before it caused the test to be interrupted.")
+                                activity?.runOnUiThread() { Core.alertMessage(activity.getString(R.string.toast_test_interrupted, profilesAdapter.profiles[k].name), activity) }
+                                Log.e("realTestProfiles", "Server: " + profilesAdapter.profiles[k].name + " or the one before it caused the test to be interrupted.")
                                 Core.stopService()
                                 return@launch
                             }
@@ -735,11 +742,10 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                             ttt++
                         }
                         Thread.sleep(3_000) //必须等几秒，否则有问题...
-                        if(!isProxyStarted)isProxyStarted=true //第一次启动成功
+                        if (!isProxyStarted) isProxyStarted = true //第一次启动成功
                         result = testConnection2()
                         profilesAdapter.profiles[k].elapsed = result
-                    }
-                    else{
+                    } else {
                         profilesAdapter.profiles[k].elapsed = -1
                     }
 
@@ -748,25 +754,31 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                     activity?.runOnUiThread() {
                         profilesAdapter.refreshId(profilesAdapter.profiles[k].id)
                     }
-                }
-                catch (e:Exception){
-                    Log.e("real_ping_all",e.toString())
+                } catch (e: Exception) {
+                    Log.e("real_ping_all", e.toString())
                 }
             }
             Core.stopService()
             activity?.runOnUiThread() {
                 //profilesAdapter.profiles.sortBy {it.elapsed ; it.url_group} // 低版本工作，但模拟器安卓10不工作
-                val list=profilesAdapter.profiles.sortedWith(compareBy({ it.url_group }, { it.elapsed }))
+                val list = profilesAdapter.profiles.sortedWith(compareBy({ it.url_group }, { it.elapsed }))
                 profilesAdapter.profiles.clear()
                 profilesAdapter.profiles.addAll(list)
                 profilesAdapter.notifyDataSetChanged()
-                try{Core.alertMessage(activity.getString(R.string.toast_test_ended),activity)}catch (t:Throwable){}
+                try {
+                    Core.alertMessage(activity.getString(R.string.toast_test_ended), activity)
+                } catch (t: Throwable) {
+                }
             }
-            try {activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)}catch (e:Exception){}
+            try {
+                activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
+            } catch (e: Exception) {
+            }
         }
     }
 
-    private fun testConnection2(timeout:Int = 10_000): Long {
+    private fun testConnection2(timeout: Int = 10_000): Long {
         var result: Long
         var conn: HttpURLConnection? = null
 
@@ -795,11 +807,11 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             }
         } catch (e: IOException) {
             // network exception
-            Log.d("testConnection2","IOException: "+Log.getStackTraceString(e))
+            Log.d("testConnection2", "IOException: " + Log.getStackTraceString(e))
             result = -1
         } catch (e: Exception) {
             // library exception, eg sumsung
-            Log.d("testConnection2","Exception: "+Log.getStackTraceString(e))
+            Log.d("testConnection2", "Exception: " + Log.getStackTraceString(e))
             result = -1
         } finally {
             conn?.disconnect()
@@ -817,31 +829,33 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
         var time = -1L
         for (k in 0 until 2) {
             val one = socketConnectTime(url, port)
-            if (one != -1L  )
-                if(time == -1L || one < time) {
+            if (one != -1L)
+                if (time == -1L || one < time) {
                     time = one
                 }
         }
         return time
     }
+
     private fun socketConnectTime(url: String, port: Int): Long {
         try {
             val start = System.currentTimeMillis()
             val socket = Socket()
             var socketAddress = InetSocketAddress(url, port)
-            socket.connect(socketAddress,5000)
+            socket.connect(socketAddress, 5000)
             val time = System.currentTimeMillis() - start
             socket.close()
             return time
         } catch (e: UnknownHostException) {
-            Log.e("testConnection2",e.toString())
+            Log.e("testConnection2", e.toString())
         } catch (e: IOException) {
-            Log.e("testConnection2",e.toString())
+            Log.e("testConnection2", e.toString())
         } catch (e: Exception) {
-            Log.e("testConnection2",e.toString())
+            Log.e("testConnection2", e.toString())
         }
         return -1
     }
+
     private fun startFilesForResult(intent: Intent, requestCode: Int) {
         try {
             startActivityForResult(intent.addCategory(Intent.CATEGORY_OPENABLE), requestCode)

@@ -19,7 +19,7 @@
  *******************************************************************************/
 
 package com.github.shadowsocks
-import SpeedUpVPN.VpnEncrypt
+
 import android.app.*
 import android.app.admin.DevicePolicyManager
 import android.content.Context
@@ -82,50 +82,46 @@ object Core {
                 DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER
     }
 
-    val activeProfileIds get() = ProfileManager.getProfile(DataStore.profileId).let {
-        if (it == null) emptyList() else listOfNotNull(it.id, it.udpFallback)
-    }
-    val currentProfile: Pair<Profile, Profile?>? get() {
-        if (DataStore.directBootAware) DirectBoot.getDeviceProfile()?.apply { return this }
-        var theOne=ProfileManager.getProfile(DataStore.profileId)
-        if (theOne==null){
-            theOne=ProfileManager.getRandomVPNServer()
-            if (theOne!=null)DataStore.profileId=theOne.id
+    val activeProfileIds
+        get() = ProfileManager.getProfile(DataStore.profileId).let {
+            if (it == null) emptyList() else listOfNotNull(it.id, it.udpFallback)
         }
-        return ProfileManager.expand(theOne ?: return null)
-    }
+    val currentProfile: Pair<Profile, Profile?>?
+        get() {
+            if (DataStore.directBootAware) DirectBoot.getDeviceProfile()?.apply { return this }
+            var theOne = ProfileManager.getProfile(DataStore.profileId)
+            if (theOne == null) {
+                theOne = ProfileManager.getRandomVPNServer()
+                if (theOne != null) DataStore.profileId = theOne.id
+            }
+            return ProfileManager.expand(theOne ?: return null)
+        }
 
     fun switchProfile(id: Long): Profile {
         val result = ProfileManager.getProfile(id) ?: ProfileManager.createProfile()
         DataStore.profileId = result.id
         return result
     }
-    fun updateBuiltinServers(activity:Activity? = null){
-        Log.e("updateBuiltinServers ","...")
+
+    fun updateBuiltinServers(activity: Activity? = null) {
+        Log.e("updateBuiltinServers ", "...")
         GlobalScope.launch {
-            val userCountry= Locale.getDefault().country
-            Log.e("userCountry",userCountry)
-            if ("CN" != userCountry){
-                var  builtinSubUrls  = app.resources.getStringArray(R.array.builtinSubUrls)
-                var builtinSub:SSRSub?=null
+            val userCountry = Locale.getDefault().country
+            Log.e("userCountry", userCountry)
+            if ("CN" != userCountry) {
+                var builtinSubUrls = app.resources.getStringArray(R.array.builtinSubUrls)
+                var builtinSub: SSRSub? = null
                 for (i in builtinSubUrls.indices) {
-                    builtinSub= SSRSubManager.createBuiltinSub(builtinSubUrls[i],"aes")
+                    builtinSub = SSRSubManager.createBuiltinSub(builtinSubUrls[i], "aes")
                     if (builtinSub != null) {
                         //val randomOne=ProfileManager.getRandomVPNServer()
                         //if (randomOne!=null)DataStore.profileId=randomOne.id
                         break
                     }
                 }
-                if (builtinSub == null) {
-                    activity?.runOnUiThread(){alertMessage(app.getString(R.string.status_network_error),activity)}
-                }else {//如果不是APP启动时更新，则停止服务，提醒重新连接
-                    //stopService()
-                    //activity?.runOnUiThread(){alertMessage(app.getString(R.string.update_servers_ok),activity)}
-                }
             }
-
-            if(DataStore.is_get_free_servers)importFreeSubs() //update free_servers
-            app.startService(Intent(app, SubscriptionService::class.java)) //update Subscription
+            if (DataStore.is_get_free_servers) importFreeSubs() //update free_servers
+            try {app.startService(Intent(app, SubscriptionService::class.java))}catch (e:Exception){}
         }
     }
 
@@ -133,17 +129,16 @@ object Core {
      * import free sub
      */
     fun importFreeSubs(): Boolean {
-        try {
-            GlobalScope.launch {
-                var  freesuburl  = app.resources.getStringArray(R.array.freesuburl)
+        GlobalScope.launch {
+            try {
+                val freesuburl = app.resources.getStringArray(R.array.freesuburl)
                 for (i in freesuburl.indices) {
-                    var freeSub=SSRSubManager.createBuiltinSub(freesuburl[i])
+                    val freeSub = SSRSubManager.createBuiltinSub(freesuburl[i])
                     if (freeSub != null) break
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
         }
         return true
     }
@@ -216,26 +211,25 @@ object Core {
     fun startService() = ContextCompat.startForegroundService(app, Intent(app, ShadowsocksConnection.serviceClass))
     fun reloadService() = app.sendBroadcast(Intent(Action.RELOAD).setPackage(app.packageName))
     fun stopService() = app.sendBroadcast(Intent(Action.CLOSE).setPackage(app.packageName))
-    fun startServiceForTest() = app.startService(Intent(app, ProxyService::class.java).putExtra("test","go"))
+    fun startServiceForTest() = app.startService(Intent(app, ProxyService::class.java).putExtra("test", "go"))
     fun showMessage(msg: String) {
         var toast = Toast.makeText(app, msg, Toast.LENGTH_LONG)
         toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 150)
         toast.show()
     }
 
-    fun alertMessage(msg: String,activity:Context,title:String="SpeedUp VPN") {
+    fun alertMessage(msg: String, activity: Context, title: String = "SpeedUp VPN") {
         try {
-            if(activity==null || (activity as Activity).isFinishing)return
+            if (activity == null || (activity as Activity).isFinishing) return
 
             val builder: AlertDialog.Builder? = activity.let {
                 AlertDialog.Builder(activity)
             }
-            builder?.setMessage(msg)?.setTitle(title)?.setPositiveButton("ok", DialogInterface.OnClickListener {
-                _, _ ->
+            builder?.setMessage(msg)?.setTitle(title)?.setPositiveButton("ok", DialogInterface.OnClickListener { _, _ ->
             })
             val dialog: AlertDialog? = builder?.create()
             dialog?.show()
+        } catch (t: Throwable) {
         }
-        catch (t:Throwable){}
     }
 }
