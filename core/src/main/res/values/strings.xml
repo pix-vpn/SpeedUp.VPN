@@ -191,7 +191,7 @@
   <string name="toast_test_ended">The test ended successfully</string>
   <string name="toast_test_interrupted">Server:%s or the previous one caused the test to be interrupted, please check them.</string>
   <string name="firstrun_tips_title">First run tips,please read carefully or take screenshot.</string>
-  <string name="firstrun_tips">The free servers that are automatically updated include some invalid servers. Before start vpn, please click the three dots button at the upper right corner and execute \'Real test all servers\', and then execute \'Remove invalid/Sort by group\' and \'Sort servers by speed\'. Then click to select a server, and then click the round button at the bottom to start VPN connection.</string>
+  <string name="firstrun_tips">1.The internet free SSR servers that are automatically updated include some invalid servers(they come from internet sharing and are provided for the convenience, we do not guarantee their reliability and security), before start vpn, please click the three dots button at the upper right corner and execute \'Real test all servers\', and then \'Remove invalid/Sort by group\' and \'Sort servers by speed\', then click to select a server, finally click the round button at the bottom to start VPN connection.\n\n2.If you do not want to use free Internet SSR servers, you can continue to use the built-in SSR servers after disabling the 3rd-party servers in app setting.</string>
   <string name="recommended_site_1">"<![CDATA[
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head profile='http://gmpg.org/xfn/11'>

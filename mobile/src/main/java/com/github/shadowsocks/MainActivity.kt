@@ -229,11 +229,11 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
     override fun onResume() {
         super.onResume()
         try {
-            if (prefs!!.getBoolean("firstrun", true)) {
+            if (prefs!!.getBoolean("firstrun2", true)) {
                 // Do first run stuff here then set 'firstrun' as false
                 Core.alertMessage(getString(R.string.firstrun_tips), this,getString(R.string.firstrun_tips_title))
                 // using the following line to edit/commit prefs
-                prefs!!.edit().putBoolean("firstrun", false).commit()
+                prefs!!.edit().putBoolean("firstrun2", false).commit()
             }
         }catch (e:Throwable){}
     }

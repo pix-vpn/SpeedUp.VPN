@@ -192,7 +192,7 @@
     <string name="toast_test_ended">啊!測試結束啦!</string>
     <string name="toast_test_interrupted">"伺服器：%s或前一個伺服器導致測試中斷，請檢查之。"</string>
     <string name="firstrun_tips_title">"首次啟動提示,請仔細閱讀或截圖保存"</string>
-    <string name="firstrun_tips">"自動更新的網路免費伺服器包括一些無效伺服器，請點右上角三個點的按鈕，執行‘測試全部配置真連接’ ，然後再執行‘刪除無效/按組排序’ 和 ‘按測速結果排序’。然後點擊選中一個服務器，再點底部中間的啟動VPN的圓形按鈕。"</string>
+    <string name="firstrun_tips">"1.自動更新的網路免費伺服器包括一些無效伺服器(網絡免費伺服器來源於網絡分享，為方便網友而提供，我們不對其可靠性和安全性做任何保證)，請點右上角三個點的按鈕，執行‘測試全部配置真連接’ ，然後再執行‘刪除無效/按組排序’ 和 ‘按測速結果排序’。然後點擊選中一個伺服器，再點底部中間的啟動VPN的圓形按鈕。\n\n2.如果您不想使用網絡免費伺服器，可在设置选项中禁用第三方伺服器后继续使用内建伺服器。"</string>
     <string name="recommended_site_1"><![CDATA[
     <html>
     <body style=\'margin:0;padding:0;font-size:14px;text-align:right\'>
