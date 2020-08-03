@@ -50,7 +50,7 @@ object ProfileManager {
 
     @Throws(SQLException::class)
     fun createProfile(profile: Profile = Profile()): Profile {
-        var existOne=PrivateDatabase.profileDao.getByHost(profile.host)
+        val existOne=PrivateDatabase.profileDao.getByHostAndPort(profile.host,profile.remotePort)
         if (existOne==null) {
             profile.id = 0
             profile.userOrder = PrivateDatabase.profileDao.nextOrder() ?: 0
@@ -60,9 +60,9 @@ object ProfileManager {
         }
         else {
             existOne.updateWith(profile)
-            return profile
+            updateProfile(existOne)
+            return existOne
         }
-
     }
 
     fun deletSSRSubProfiles(profiles: List<Profile>) {

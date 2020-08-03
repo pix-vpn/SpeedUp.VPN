@@ -319,6 +319,9 @@ data class Profile(
         @Query("SELECT * FROM `Profile` WHERE `host` = :host LIMIT 1")
         fun getByHost(host: String): Profile?
 
+        @Query("SELECT * FROM `Profile` WHERE `host` = :host and `remotePort` = :port LIMIT 1")
+        fun getByHostAndPort(host: String,port:Int): Profile?
+
         @Query("SELECT * FROM `Profile` WHERE `Subscription` != 2 ORDER BY `userOrder`")
         fun listActive(): List<Profile>
 
@@ -382,8 +385,7 @@ data class Profile(
             profile.method = method
         }
     }
-
-    fun isSameAs(other: Profile): Boolean = other.host == host
+    fun isSameAs(other: Profile): Boolean = other.host == host && other.remotePort == remotePort
     fun updateWith(other: Profile){
         if (!isSameAs(other))return
         host = other.host
