@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
 
-        <activity
+<!--        <activity
             android:name=".Shortcut"
             android:excludeFromRecents="true"
             android:label="@string/quick_toggle"
@@ -64,7 +64,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
             </intent-filter>
-        </activity>
+        </activity>-->
 
         <service
             android:name=".bg.TileService"

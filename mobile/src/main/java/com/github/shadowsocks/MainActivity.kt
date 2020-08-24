@@ -59,6 +59,9 @@ import com.github.shadowsocks.utils.getBitmap
 import com.github.shadowsocks.widget.ListHolderListener
 import com.github.shadowsocks.widget.ServiceButton
 import com.github.shadowsocks.widget.StatsBar
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -70,6 +73,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         private const val REQUEST_CONNECT = 1
 
         var stateListener: ((BaseService.State) -> Unit)? = null
+        @JvmStatic var newsClickCount = 1L
     }
 
     // UI
@@ -135,29 +139,6 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         else -> Core.startService()
     }
 
-    private fun updateShortcuts() {
-        fun getIcon(id: Int): IconCompat = if (Build.VERSION.SDK_INT >= 26)
-            IconCompat.createWithAdaptiveBitmap(getBitmap(id))
-        else IconCompat.createWithBitmap(getBitmap(id))
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val shortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
-            val toggle = ShortcutInfoCompat.Builder(this, Shortcut.SHORTCUT_TOGGLE)
-                    .setIntent(Intent(this, Shortcut::class.java).setAction(Shortcut.SHORTCUT_TOGGLE))
-                    .setIcon(getIcon(R.drawable.ic_qu_shadowsocks_launcher))
-                    .setShortLabel(Core.app.getString(R.string.quick_toggle))
-                    .build()
-                    .toShortcutInfo()
-            val scan = ShortcutInfoCompat.Builder(this, Shortcut.SHORTCUT_SCAN)
-                    .setIntent(Intent(this, Shortcut::class.java).setAction(Shortcut.SHORTCUT_SCAN))
-                    .setIcon(getIcon(R.drawable.ic_qu_camera_launcher))
-                    .setShortLabel(Core.app.getString(R.string.add_profile_methods_scan_qr_code))
-                    .build()
-                    .toShortcutInfo()
-            shortcutManager?.dynamicShortcuts = listOf(toggle, scan)
-        }
-    }
-
     private val handler = Handler()
     private val connection = ShadowsocksConnection(handler, true)
     override fun onServiceConnected(service: IShadowsocksService) = changeState(try {
@@ -182,6 +163,19 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         }
     }
     //lateinit var mAdView : AdView
+    lateinit var mInterstitialAd: InterstitialAd
+
+    fun userActionAds(){
+        if (newsClickCount%3==2L)mInterstitialAd.loadAd(AdRequest.Builder().build())
+        if (newsClickCount%3==1L && mInterstitialAd.isLoaded) {
+            Log.e("ads", "click count is $newsClickCount ,show ad.")
+            mInterstitialAd.show()
+        } else {
+            Log.e("ads", "click count is $newsClickCount ,The interstitial wasn't loaded yet.")
+        }
+        newsClickCount++
+    }
+
     var prefs: SharedPreferences? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -195,10 +189,17 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
 //        val adRequest = AdRequest.Builder().build()
 //        mAdView.loadAd(adRequest)
 
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = "ca-app-pub-2194043486084479/5146567707"
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
+
         snackbar = findViewById(R.id.snackbar)
         snackbar.setOnApplyWindowInsetsListener(ListHolderListener)
         stats = findViewById(R.id.stats)
-        stats.setOnClickListener { if (state == BaseService.State.Connected) stats.testConnection() }
+        stats.setOnClickListener {
+            userActionAds()
+            if (state == BaseService.State.Connected) stats.testConnection()
+        }
         drawer = findViewById(R.id.drawer)
         drawer.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         navigation = findViewById(R.id.navigation)
@@ -209,7 +210,10 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         }
 
         fab = findViewById(R.id.fab)
-        fab.setOnClickListener { toggle() }
+        fab.setOnClickListener {
+            if(state.canStop)userActionAds()
+            toggle()
+        }
         fab.setOnApplyWindowInsetsListener { view, insets ->
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 bottomMargin = insets.systemWindowInsetBottom +
@@ -221,7 +225,6 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         changeState(BaseService.State.Idle) // reset everything to init state
         connection.connect(this, this)
         DataStore.publicStore.registerChangeListener(this)
-        updateShortcuts()
         try {prefs = getSharedPreferences("free.ssr.proxy.SpeedUp.VPN", MODE_PRIVATE)}catch (e:Exception){}
         //导入内置订阅
         if(DataStore.isAutoUpdateServers)Core.updateBuiltinServers()
@@ -233,7 +236,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
                 // Do first run stuff here then set 'firstrun' as false
                 Core.alertMessage(getString(R.string.firstrun_tips), this,getString(R.string.firstrun_tips_title))
                 // using the following line to edit/commit prefs
-                prefs!!.edit().putBoolean("firstrun2", false).commit()
+                prefs!!.edit().putBoolean("firstrun2", false).apply()
             }
         }catch (e:Throwable){}
     }
@@ -255,18 +258,26 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         if (item.isChecked) drawer.closeDrawers() else {
             when (item.itemId) {
                 R.id.profiles -> {
+                    //userActionAds()
                     displayFragment(ProfilesFragment())
                     connection.bandwidthTimeout = connection.bandwidthTimeout   // request stats update
                 }
-                R.id.globalSettings -> displayFragment(GlobalSettingsFragment())
+                R.id.globalSettings -> {
+                    userActionAds()
+                    displayFragment(GlobalSettingsFragment())
+                }
                 R.id.about -> {
+                    userActionAds()
                     displayFragment(AboutFragment())
                 }
                 R.id.faq -> {
                     launchUrl(getString(R.string.faq_url))
                     return true
                 }
-                R.id.subscriptions -> displayFragment(SubscriptionFragment())
+                R.id.subscriptions -> {
+                    userActionAds()
+                    displayFragment(SubscriptionFragment())
+                }
                 else -> return false
             }
             item.isChecked = true
