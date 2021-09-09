@@ -19,7 +19,6 @@
  *******************************************************************************/
 
 package com.github.shadowsocks
-
 import SpeedUpVPN.VpnEncrypt
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -30,6 +29,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -51,7 +51,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.crashlytics.android.Crashlytics
 import com.github.shadowsocks.aidl.TrafficStats
 import com.github.shadowsocks.bg.BaseService
 import com.github.shadowsocks.database.Profile
@@ -69,9 +68,6 @@ import com.github.shadowsocks.widget.UndoSnackbarManager
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.VideoOptions
-import com.google.android.gms.ads.formats.NativeAdOptions
-import com.google.android.gms.ads.formats.UnifiedNativeAd
-import com.google.android.gms.ads.formats.UnifiedNativeAdView
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -107,8 +103,6 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
     private fun isProfileEditable(id: Long) =
             (activity as MainActivity).state == BaseService.State.Stopped || id !in Core.activeProfileIds
 
-    private var nativeAd: UnifiedNativeAd? = null
-    private var nativeAdView: UnifiedNativeAdView? = null
     private var adHost: ProfileViewHolder? = null
     private fun tryBindAd() = lifecycleScope.launchWhenStarted {
         try {
@@ -129,7 +123,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                     if (viewHolder == null) continue
                     viewHolder = viewHolder as ProfileViewHolder
                     if (viewHolder.item.isBuiltin() && viewHolder.item.id < 3) {
-                        viewHolder.populateUnifiedNativeAdView(nativeAd!!, nativeAdView!!)
+                        viewHolder.populateUnifiedNativeAdView()
                         // might be in the middle of a layout after scrolling, need to wait
                         withContext(Dispatchers.Main) { profilesAdapter.notifyItemChanged(i) }
                         break
@@ -172,7 +166,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
                 })
             }
         } catch (e: WriterException) {
-            Crashlytics.logException(e)
+            printLog(e)
             (activity as MainActivity).snackbar().setText(e.readableMessage).show()
             dismiss()
             null
@@ -215,7 +209,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             TooltipCompat.setTooltipText(share, share.contentDescription)
         }
 
-        fun populateUnifiedNativeAdView(nativeAd: UnifiedNativeAd, adView: UnifiedNativeAdView) {
+/*        fun populateUnifiedNativeAdView(nativeAd: UnifiedNativeAd, adView: UnifiedNativeAdView) {
             // Set other ad assets.
             adView.headlineView = adView.findViewById(R.id.ad_headline)
             adView.bodyView = adView.findViewById(R.id.ad_body)
@@ -272,32 +266,23 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             adContainer.setPadding(0, 1, 0, 0)  //Adding dividing line for ads
             adContainer.addView(adView)
             adHost = this
+        }*/
+        fun populateUnifiedNativeAdView() {
+            val imageBannerView = ImageView(activity)
+            imageBannerView.setImageResource(R.drawable.v2free)
+            imageBannerView.setOnClickListener{
+                val intent = Intent()
+                intent.action = Intent.ACTION_VIEW
+                intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                intent.data = Uri.parse("https://github.com/bannedbook/fanqiang/wiki/V2ray%E6%9C%BA%E5%9C%BA")
+                startActivity(intent)
+            }
+            adContainer.addView(imageBannerView)
+            adHost = this
         }
-
         fun attach() {
             if (adHost != null || !item.isBuiltin()) return
-            if (nativeAdView == null) {
-                nativeAdView = layoutInflater.inflate(R.layout.ad_unified, adContainer, false) as UnifiedNativeAdView
-                AdLoader.Builder(context, "ca-app-pub-2194043486084479/5278255298").apply {
-                    forUnifiedNativeAd { unifiedNativeAd ->
-                        // You must call destroy on old ads when you are done with them,
-                        // otherwise you will have a memory leak.
-                        nativeAd?.destroy()
-                        nativeAd = unifiedNativeAd
-                        tryBindAd()
-                    }
-                    withNativeAdOptions(NativeAdOptions.Builder().apply {
-                        setVideoOptions(VideoOptions.Builder().apply {
-                            setStartMuted(true)
-                        }.build())
-                    }.build())
-                }.build().loadAd(AdRequest.Builder().apply {
-                    addTestDevice("B08FC1764A7B250E91EA9D0D5EBEB208")
-                    addTestDevice("7509D18EB8AF82F915874FEF53877A64")
-                    addTestDevice("F58907F28184A828DD0DB6F8E38189C6")
-                    addTestDevice("FE983F496D7C5C1878AA163D9420CA97")
-                }.build())
-            } else if (nativeAd != null) populateUnifiedNativeAdView(nativeAd!!, nativeAdView!!)
+            populateUnifiedNativeAdView()
         }
 
         fun detach() {
@@ -680,6 +665,7 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
             }
 
             R.id.remove_invalid_servers -> {
+                //throw RuntimeException("Test Crash") // Force a crash
                 (activity as MainActivity).userActionAds()
                 try {
                     for (k in profilesAdapter.profiles.size - 1 downTo 0) {
@@ -935,7 +921,6 @@ class ProfilesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener {
 
     override fun onDestroyView() {
         undoManager.flush()
-        nativeAd?.destroy()
         super.onDestroyView()
     }
 

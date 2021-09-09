@@ -45,7 +45,6 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.updateLayoutParams
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceDataStore
-import com.crashlytics.android.Crashlytics
 import com.github.shadowsocks.aidl.IShadowsocksService
 import com.github.shadowsocks.aidl.ShadowsocksConnection
 import com.github.shadowsocks.aidl.TrafficStats
@@ -56,13 +55,13 @@ import com.github.shadowsocks.subscription.SubscriptionFragment
 import com.github.shadowsocks.utils.Key
 import com.github.shadowsocks.utils.SingleInstanceActivity
 import com.github.shadowsocks.utils.getBitmap
+import com.github.shadowsocks.utils.printLog
 import com.github.shadowsocks.widget.ListHolderListener
 import com.github.shadowsocks.widget.ServiceButton
 import com.github.shadowsocks.widget.StatsBar
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 
@@ -158,20 +157,52 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
             resultCode == Activity.RESULT_OK -> Core.startService()
             else -> {
                 snackbar().setText(R.string.vpn_permission_denied).show()
-                Crashlytics.log(Log.ERROR, TAG, "Failed to start VpnService from onActivityResult: $data")
+                printLog("Failed to start VpnService from onActivityResult: $data")
             }
         }
     }
     //lateinit var mAdView : AdView
-    lateinit var mInterstitialAd: InterstitialAd
+    private var mInterstitialAd: InterstitialAd? = null
+    private fun loadInterstitialAd() {
+        var adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(this,"ca-app-pub-2194043486084479/5146567707", adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.d(TAG, adError?.message)
+                mInterstitialAd = null
+            }
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                Log.d(TAG, "Ad was loaded.")
+                mInterstitialAd = interstitialAd
+            }
+        })
 
+        mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                Log.d(TAG, "Ad was dismissed.")
+            }
+
+            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                Log.d(TAG, "Ad failed to show.")
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                Log.d(TAG, "Ad showed fullscreen content.")
+                mInterstitialAd = null
+            }
+        }
+    }
     fun userActionAds(){
-        if (newsClickCount%3==2L)mInterstitialAd.loadAd(AdRequest.Builder().build())
-        if (newsClickCount%3==1L && mInterstitialAd.isLoaded) {
+        if (newsClickCount%3==2L){
+            Log.e("ads", "click count is $newsClickCount ,load ad.")
+            loadInterstitialAd()
+            newsClickCount++
+            return
+        }
+        if (newsClickCount%3==1L && mInterstitialAd != null) {
             Log.e("ads", "click count is $newsClickCount ,show ad.")
-            mInterstitialAd.show()
+            mInterstitialAd?.show(this)
         } else {
-            Log.e("ads", "click count is $newsClickCount ,The interstitial wasn't loaded yet.")
+            Log.e("ads", "click count is $newsClickCount ,wait.")
         }
         newsClickCount++
     }
@@ -189,9 +220,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
 //        val adRequest = AdRequest.Builder().build()
 //        mAdView.loadAd(adRequest)
 
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-2194043486084479/5146567707"
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
+        userActionAds()
 
         snackbar = findViewById(R.id.snackbar)
         snackbar.setOnApplyWindowInsetsListener(ListHolderListener)

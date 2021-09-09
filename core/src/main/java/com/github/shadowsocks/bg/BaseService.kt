@@ -28,7 +28,6 @@ import android.content.IntentFilter
 import android.os.*
 import android.util.Log
 import androidx.core.content.getSystemService
-import com.crashlytics.android.Crashlytics
 import com.github.shadowsocks.BootReceiver
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.Core.app
@@ -119,7 +118,8 @@ object BaseService {
                 repeat(count) {
                     try {
                         work(callbacks.getBroadcastItem(it))
-                    } catch (_: RemoteException) {
+                    } catch (e: RemoteException) {
+                        printLog(e)
                     } catch (e: Exception) {
                         printLog(e)
                     }
@@ -131,7 +131,7 @@ object BaseService {
 
         private suspend fun loop() {
             while (true) {
-                delay(bandwidthListeners.values.min() ?: return)
+                delay(bandwidthListeners.values.minOrNull() ?: return)
                 val proxies = listOfNotNull(data?.proxy, data?.udpFallback)
                 val stats = proxies
                         .map { Pair(it.profile.id, it.trafficMonitor?.requestUpdate()) }
@@ -228,7 +228,7 @@ object BaseService {
             when {
                 s == State.Stopped -> startRunner()
                 s.canStop -> stopRunner(true)
-                else -> Crashlytics.log(Log.WARN, tag, "Illegal state when invoking use: $s")
+                else -> printLog("Illegal state when invoking use: $s")
             }
         }
 
