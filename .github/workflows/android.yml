@@ -17,6 +17,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '8'
+        ndk-version:  '21.0.6113669'
         distribution: 'temurin'
         cache: gradle
 
